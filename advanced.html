@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Search</title>
+    <link rel="stylesheet" href="google.css" />
+  </head>
+  <body>
+    <section>
+      <header>
+        <ul>
+            <li><a href="/image.html">Image Search</a></li>
+            <li><a href="/advanced.html">Advanced Search</a></li>
+        </ul>
+      </header>
+    </section>
+    <div style="position: relative; top: 50%; transform: translateY(-150%) translateX(5%); display: flex; justify-content: left; align-items: left; height: 55vh;">
+        <form method="get" action="https://www.google.com/search?q=?">
+            <a href="index.html"><img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png" alt="Google logo"></a>
+            <div class="search-box-container">
+              <div class="search-box">
+                <label style="margin-right: 20px" for="search-box-1">All of these words:</label>
+                <input type="text" id="search-box-1" name="q">
+              </div>
+              <div class="search-box">
+                <label style="margin-right: 16px" for="search-box-2">Any of these words:</label>
+                <input type="text" id="search-box-2" name="q">
+              </div>
+              <div class="search-box">
+                <label for="search-box-3">Exact phrase:</label>
+                <input type="text" id="search-box-3" name="q">
+              </div>
+              <input type="submit" value="Advanced Search">
+            </div>
+          </form>
+        
+    </div>
+  </body>
+</html>
