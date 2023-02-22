@@ -1,26 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Search</title>
-    <link rel="stylesheet" href="google.css" />
+    <title>Image Search</title>
+    <link rel="stylesheet" href="google.css">
   </head>
   <body>
     <section>
       <header>
         <ul>
-            <li><a href="/image.html">Image Search</a></li>
-            <li><a href="/advanced.html">Advanced Search</a></li>
+          <li><a href="/image.html">Image Search</a></li>
+          <li><a href="/advanced.html">Advanced Search</a></li>
         </ul>
       </header>
     </section>
     <div style="position: relative; top: 50%; transform: translateY(-150%); display: flex; justify-content: center; align-items: center; height: 50vh;">
       <form method="get" action="https://images.google.com/images">
         <div style="display: flex; flex-direction: column; align-items: center;">
-          <a href="index.html"><img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png" alt="Google logo"></a>
-          <input type="text" id="search-box" name="q" autofocus="on" autocomplete="off" style="border-radius: 5px; width: 300px; height: 40px; margin-bottom: 10px;">
-          <input type="submit" name ="isch" value="Image Search">
+            <a href="index.html"><img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png" alt="Google logo"></a>
+            <div class="search-box">
+                <input type="text" id="search-box" name="q" autofocus="on" autocomplete="off" style="border-radius: 5px; width: 300px; height: 40px; margin-bottom: 10px;">
+            </div>
+          <input type="submit" name="isch" value="Image Search">
         </div>
-        
       </form>
     </div>
   </body>
