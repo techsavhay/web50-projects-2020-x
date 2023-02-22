@@ -39,7 +39,7 @@ section header
   }
   
   .search-box label {
-    margin-right: 50px;
+    margin-right: 15px;
     margin-top: 10px;
     justify-content: left;
   }
@@ -48,5 +48,12 @@ section header
     border-radius: 5px;
     width: 300px;
     height: 40px;
+    margin-right: 15px;
   }
   
+  .submit-button {
+    width: 100px;
+    height: 25px;
+    padding: 0;
+    align-items: flex-end;
+  }
