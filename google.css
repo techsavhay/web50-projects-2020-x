@@ -6,6 +6,7 @@
     font-family: 'arial', sans-serif;
 
 }
+
 section
 {
     position:relative;
@@ -52,8 +53,8 @@ section header
   }
   
   .submit-button {
-    width: 100px;
+    display:flex
+    width: 50px;
     height: 25px;
-    padding: 0;
-    align-items: flex-end;
+    align:right
   }
