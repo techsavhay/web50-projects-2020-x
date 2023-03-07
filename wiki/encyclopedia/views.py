@@ -29,6 +29,9 @@ def search(request):
     else:
         content = util.get_entry(search_query) #use get_entry to search for entry
         if content is None:
-            return render(request, "encyclopedia/index.html") # remove this code, search results to be finished here
+             all_entries = util.list_entries()
+             matching_entries = list(filter(lambda x: search_query in x, all_entries))
+             return render(request, "encyclopedia/search.html", {"matching_entries": matching_entries})
+             #return render(request, "encyclopedia/index.html") # remove this code, search results to be finished here
         else:
             return redirect('entry', title=search_query)
