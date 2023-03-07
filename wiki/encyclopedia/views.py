@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from . import util
 
@@ -21,3 +21,14 @@ def entry(request, title):
             "title": title,
             "content": content
         })
+
+def search(request):
+    search_query = request.GET.get('q')
+    if search_query is None:
+        return render(request, "encyclopedia/index.html")
+    else:
+        content = util.get_entry(search_query) #use get_entry to search for entry
+        if content is None:
+            return render(request, "encyclopedia/index.html") # remove this code, search results to be finished here
+        else:
+            return redirect('entry', title=search_query)
