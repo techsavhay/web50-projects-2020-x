@@ -7,6 +7,7 @@
 {% block body %}
 <h2>Create New Page</h2> <br />
 <form action="{% url 'new_page' %}" method="post">
+    {% csrf_token %}
     <input autocomplete="off" type="text" autofocus="on" name="new_page_title" placeholder="New Page Title"><br />
     <br>
     <textarea name="new_page_content">Please enter the new page content here.</textarea><br />

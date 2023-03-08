@@ -43,27 +43,20 @@ def new_page(request):
         new_page_title = request.POST.get('new_page_title')
         existing_page_title = util.get_entry(new_page_title)
         # if the new page title is the same as an existing one then show page_error.html
-        if new_page_title == existing_page_title:
+        if existing_page_title is not None and new_page_title == existing_page_title:
             return render(request, "encyclopedia/page_error.html", {
             "new_page_title": new_page_title,
             })
         #if the page title is new then save the title and contents in a new .md file.
         else:
             new_page_content = request.POST.get('new_page_content')
-            file_path = os.path.join('wiki/entries/')
-
-
-   """ page_title = request.GET.get('new_page_title')
-    #if page title is empty render new_page.html
-    if page_title is None: 
-        return render(request, "encyclopedia/new_page.html")
+            file_path = os.path.join('entries/', f'{new_page_title}.md')
+            # define the complete new file with title and contents
+            complete_new_file = f'# {new_page_title}\n\n{new_page_content}'
+            # write the contents to the file
+            with open(file_path, 'w') as f:
+                f.write(complete_new_file)
+            return redirect('entry', title=new_page_title)
+    #if method is not POST
     else:
-        content = util.get_entry(page_title) # use get_entry function to search for the page title.
-        #If the page title doesnt exist save it. 
-        if content is None:
-            pass # TO BE WRITTEN
-        #If the page does exist already show an error message
-        else:
-            return render(request, "encyclopedia/page_error.html", {
-            "title": title,
-            })
+        return render(request, "encyclopedia/new_page.html")
