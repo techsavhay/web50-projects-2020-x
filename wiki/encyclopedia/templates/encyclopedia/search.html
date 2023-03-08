@@ -10,7 +10,7 @@
 
     <ul>
         {% for entry in matching_entries %}
-            <li><a href="{% url 'entry' title=entry.title %}">{{ matching_entries }}</a></li>
+            <li><a href="{% url 'entry' title=entry.title %}">{{ entry.title  }}</a></li>
         {% empty %}
             <li>No results found</li>
         {% endfor %}
