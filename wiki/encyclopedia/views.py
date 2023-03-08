@@ -37,7 +37,7 @@ def search(request):
         else:
             return redirect('entry', title=search_query)
 
-def new_page(request):
+def new_page(request, title):
     page_title = request.GET.get('new_page_title')
     #if page title is empty render new_page.html
     if page_title is None: 
@@ -49,6 +49,6 @@ def new_page(request):
             pass # TO BE WRITTEN
         #If the page does exist already show an error message
         else:
-            
-
-    
+            return render(request, "encyclopedia/page_error.html", {
+            "title": title,
+            })
