@@ -22,6 +22,7 @@ def entry(request, title):
             "content": content
         })
 
+
 def search(request):
     search_query = request.GET.get('q')
     if search_query is None:
@@ -29,9 +30,10 @@ def search(request):
     else:
         content = util.get_entry(search_query) #use get_entry to search for entry
         if content is None:
-             all_entries = util.list_entries()
-             matching_entries = list(filter(lambda x: search_query in x, all_entries))
-             return render(request, "encyclopedia/search.html", {"matching_entries": matching_entries})
-             #return render(request, "encyclopedia/index.html") # remove this code, search results to be finished here
+            all_entries = util.list_entries()
+            matching_entries = list(filter(lambda x: search_query in x, all_entries))
+            return render(request, "encyclopedia/search.html", {"matching_entries": matching_entries, "query": search_query})
+        
         else:
             return redirect('entry', title=search_query)
+
