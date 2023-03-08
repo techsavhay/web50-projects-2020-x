@@ -1,12 +1,17 @@
 {% extends "encyclopedia/layout.html" %}
 
 {% block title %}
-    Create New Page
+    <h2>Create New Page</h2>
 {% endblock %}
 
 {% block body %}
-<form action="{% url 'new_page' %}" method="get">
-    <input autocomplete="off" type="text" autofocus="on" name="new_page_title" placeholder="New Page Title">
+<h2>Create New Page</h2> <br />
+<form action="{% url 'new_page' %}" method="post">
+    <input autocomplete="off" type="text" autofocus="on" name="new_page_title" placeholder="New Page Title"><br />
+    <br>
+    <textarea name="new_page_content">Please enter the new page content here.</textarea><br />
+    <br>
+    <input type="submit" value="Submit">
 </form>
 
 

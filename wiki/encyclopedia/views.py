@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+import os
 
 from . import util
 
@@ -37,8 +38,22 @@ def search(request):
         else:
             return redirect('entry', title=search_query)
 
-def new_page(request, title):
-    page_title = request.GET.get('new_page_title')
+def new_page(request):
+    if request.method == 'POST':
+        new_page_title = request.POST.get('new_page_title')
+        existing_page_title = util.get_entry(new_page_title)
+        # if the new page title is the same as an existing one then show page_error.html
+        if new_page_title == existing_page_title:
+            return render(request, "encyclopedia/page_error.html", {
+            "new_page_title": new_page_title,
+            })
+        #if the page title is new then save the title and contents in a new .md file.
+        else:
+            new_page_content = request.POST.get('new_page_content')
+            file_path = os.path.join('wiki/entries/')
+
+
+   """ page_title = request.GET.get('new_page_title')
     #if page title is empty render new_page.html
     if page_title is None: 
         return render(request, "encyclopedia/new_page.html")
