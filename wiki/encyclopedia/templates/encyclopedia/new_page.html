@@ -1,1 +1,13 @@
-new page template to be coded
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+    Create New Page
+{% endblock %}
+
+{% block body %}
+<form action="{% url 'new_page' %}" method="get">
+    <input autocomplete="off" type="text" autofocus="on" name="new_page_title" placeholder="New Page Title">
+</form>
+
+
+{% endblock %}
