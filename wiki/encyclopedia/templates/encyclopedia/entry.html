@@ -11,6 +11,7 @@
         {{ content }}
     </div><br />
 
-    <button><a href="{{ edit_url }}">Edit Page</a></button>
+    <button><a href="{% url 'edit_page' title=title %}">Edit Page</a></button>
+
     
 {% endblock %}
