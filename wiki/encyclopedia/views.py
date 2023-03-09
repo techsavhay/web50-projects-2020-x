@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 import random
 import os
+import markdown2
 
 from . import util
 
@@ -21,9 +22,10 @@ def entry(request, title):
                            
     else:
         edit_url = reverse('edit_page', kwargs={'title': title})
+        html_content = markdown2.markdown(content)
         return render(request, "encyclopedia/entry.html", {
             "title": title,
-            "content": content,
+            "content": html_content,
             "edit_url": edit_url
         })
 
