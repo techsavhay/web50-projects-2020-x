@@ -41,14 +41,17 @@ def search(request):
 def new_page(request):
     if request.method == 'POST':
         new_page_title = (request.POST.get('new_page_title').strip())
+        #check if the page exists using entry_exists function, if it returns true then show page_error.html
         if (util.entry_exists(new_page_title)):
             return render(request, "encyclopedia/page_error.html", {
             "new_page_title": new_page_title,
             })
         else:
+            #grab the content from the user input
             new_page_content = request.POST.get('new_page_content')
+            #specifing the new filename format and location
             file_path = os.path.join('entries/', f'{new_page_title}.md')
-            # define the complete new file with title and contents
+            # define the complete new file with title and contents (and newlines)
             complete_new_file = f'# {new_page_title}\n\n{new_page_content}'
             # write the contents to the file
             with open(file_path, 'w') as f:
