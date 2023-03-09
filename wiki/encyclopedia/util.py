@@ -35,3 +35,10 @@ def get_entry(title):
         return f.read().decode("utf-8")
     except FileNotFoundError:
         return None
+
+def entry_exists(title):
+    try:
+        f = default_storage.open(f"entries/{title}.md")
+        return True
+    except FileNotFoundError:
+        return None

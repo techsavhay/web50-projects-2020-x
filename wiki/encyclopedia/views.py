@@ -40,15 +40,11 @@ def search(request):
 
 def new_page(request):
     if request.method == 'POST':
-        new_page_title = request.POST.get('new_page_title')
-        existing_page_title = util.get_entry(new_page_title)[2:]
-        print(f"New page title = {new_page_title} Existing page title = {existing_page_title}" )
-        # if the new page title is the same as an existing one then show page_error.html
-        if existing_page_title is not None and new_page_title == existing_page_title:
+        new_page_title = (request.POST.get('new_page_title').strip())
+        if (util.entry_exists(new_page_title)):
             return render(request, "encyclopedia/page_error.html", {
             "new_page_title": new_page_title,
             })
-        #if the page title is new then save the title and contents in a new .md file.
         else:
             new_page_content = request.POST.get('new_page_content')
             file_path = os.path.join('entries/', f'{new_page_title}.md')
