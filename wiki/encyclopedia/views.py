@@ -1,4 +1,6 @@
 from django.shortcuts import render, redirect
+from django.urls import reverse
+
 import os
 
 from . import util
@@ -18,9 +20,11 @@ def entry(request, title):
         })
                            
     else:
+        edit_url = reverse('edit_page', kwargs={'title': title})
         return render(request, "encyclopedia/entry.html", {
             "title": title,
-            "content": content
+            "content": content,
+            "edit_url": edit_url
         })
 
 

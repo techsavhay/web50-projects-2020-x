@@ -11,10 +11,6 @@
         {{ content }}
     </div><br />
 
-    <form action="{% url 'edit_page' %}?title={{ title }}&content={{ content }}" method="get">
-        {% csrf_token %}
-    
-        <input type="submit" value="Edit Page">
-    </form>
+    <button><a href="{{ edit_url }}">Edit Page</a></button>
     
 {% endblock %}
