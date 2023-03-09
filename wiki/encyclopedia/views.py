@@ -6,20 +6,21 @@ import markdown2
 
 from . import util
 
-
+#renders the index view and also passes on a variable which lists all the encylopedia entries
 def index(request):
     return render(request, "encyclopedia/index.html", {
         "entries": util.list_entries()
     })
 
+#renders entry view
 def entry(request, title):
     content = util.get_entry(title)
-        
+    #if the page doesnt exist    
     if content is None:
         return render(request, "encyclopedia/error.html", {
             "title": title
         })
-                           
+     # sorts out reverse urls, converts markdown to html, renders page and passed on variables.                      
     else:
         edit_url = reverse('edit_page', kwargs={'title': title})
         html_content = markdown2.markdown(content)
@@ -29,13 +30,15 @@ def entry(request, title):
             "edit_url": edit_url
         })
 
-
+# handles search request
 def search(request):
     search_query = request.GET.get('q')
     if search_query is None:
         return render(request, "encyclopedia/index.html")
+    #use get_entry to search for entry
     else:
-        content = util.get_entry(search_query) #use get_entry to search for entry
+        content = util.get_entry(search_query)
+        #if exact entry isnt found create a list of partial entries using lamda filters, then pass that variable one 
         if content is None:
             all_entries = util.list_entries()
             matching_entries = list(filter(lambda x: search_query in x, all_entries))
@@ -43,7 +46,8 @@ def search(request):
         
         else:
             return redirect('entry', title=search_query)
-
+        
+#handle new page view
 def new_page(request):
     if request.method == 'POST':
         new_page_title = (request.POST.get('new_page_title').strip())
@@ -66,7 +70,8 @@ def new_page(request):
     #if method is not POST
     else:
         return render(request, "encyclopedia/new_page.html")
-
+    
+# handle edit page 
 def edit_page(request, title):
     content = util.get_entry(title)
         
@@ -80,7 +85,7 @@ def edit_page(request, title):
             "title": title,
             "content": content
         })
-
+#partially handles save edit view, some work done by utils 'save_entry'
 def save_edit(request, title):
     if request.method == 'POST':
         # Get the edited content and title from the request
