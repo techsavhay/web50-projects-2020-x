@@ -1,0 +1,3 @@
+# Unicode
+
+Unicode, formally The Unicode Standard,[note 1][note 2] is an information technology standard for the consistent encoding, representation, and handling of text expressed in most of the world's writing systems. The standard, which is maintained by the Unicode Consortium, defines as of the current version (15.0) 149,186 characters[3][4] covering 161 modern and historic scripts, as well as symbols, 3664 emoji[5] (including in colors), and non-visual control and formatting codes.Please enter the new page content here.
