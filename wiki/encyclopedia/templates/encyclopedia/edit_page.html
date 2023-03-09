@@ -8,9 +8,9 @@
 <h2>Edit Page</h2> <br />
 <form action="{% url 'new_page' %}" method="post">
     {% csrf_token %}
-    <input autocomplete="off" type="text" autofocus="on" name="new_page_title" placeholder="New Page Title"><br />
+    <input autocomplete="off" type="text" autofocus="on" name="new_page_title" placeholder="{{ title }}"><br />
     <br>
-    <textarea name="new_page_content">Please enter the new page content here.</textarea><br />
+    <textarea name="new_page_content">"{{ content }}"</textarea><br />
     <br>
     <input type="submit" value="Submit">
 </form>
