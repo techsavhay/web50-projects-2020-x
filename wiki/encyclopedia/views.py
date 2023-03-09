@@ -60,3 +60,6 @@ def new_page(request):
     #if method is not POST
     else:
         return render(request, "encyclopedia/new_page.html")
+
+def edit_page():
+    pass

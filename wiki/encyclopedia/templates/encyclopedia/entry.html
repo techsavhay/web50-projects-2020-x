@@ -9,5 +9,11 @@
 
     <div class="entry-content">
         {{ content }}
-    </div>
+    </div><br />
+
+    <form action="{% url 'edit_page' %}" method="get">
+        {% csrf_token %}
+
+        <input type="submit" value="Edit Page">
+    </form>
 {% endblock %}
