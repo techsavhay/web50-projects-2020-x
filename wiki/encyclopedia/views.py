@@ -100,10 +100,4 @@ def save_edit(request, title):
 def random_page(request):
     #pick a random entry from list_entries list
     random_entry= random.choice(util.list_entries())
-    #update the content from the random title (random_entry)
-    content = util.get_entry(random_entry)
-    #return the entry page and pass on the title and contents variables.
-    return render(request, "encyclopedia/entry.html", {
-            "title": random_entry,
-            "content": content
-        })
+    return redirect('entry', title=random_entry)
