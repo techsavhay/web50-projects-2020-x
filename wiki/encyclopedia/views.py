@@ -62,7 +62,12 @@ def new_page(request):
         return render(request, "encyclopedia/new_page.html")
 
 def edit_page(request):
+    title = request.GET.get('title')
+    content = request.GET.get('content')
     if request.method == 'POST':
         return render(request, "encyclopedia/edit_page.html") # TO BE CHANGED TO SAVE CONTENT AND TITLE OF THE PAGE FROM THE FORM
     else:
-        return render(request, "encyclopedia/edit_page.html")
+        return render(request, "encyclopedia/edit_page.html", {
+            "title":title,
+            "content":content
+        })

@@ -10,9 +10,9 @@
     {% csrf_token %}
     <input autocomplete="off" type="text" autofocus="on" name="new_page_title" placeholder="{{ title }}"><br />
     <br>
-    <textarea name="new_page_content">"{{ content }}"</textarea><br />
+    <textarea name="new_page_content">{{ content }}</textarea><br />
     <br>
-    <input type="submit" value="Submit">
+    <input type="submit" value="Save">
 </form>
 
 
