@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
-
+import random
 import os
 
 from . import util
@@ -94,3 +94,11 @@ def save_edit(request, title):
         # Handle GET request if necessary
         return render(request, "encyclopedia/index.html")
 
+def random_page(request):
+    random_entry= random.choice(util.list_entries())
+    print(f"Random entry is: {random_entry}")
+    content = util.get_entry(random_entry)
+    return render(request, "encyclopedia/entry.html", {
+            "title": random_entry,
+            "content": content
+        })
