@@ -79,12 +79,18 @@ def edit_page(request, title):
             "content": content
         })
 
-def save_edit(request):
+def save_edit(request, title):
     if request.method == 'POST':
         # Get the edited content and title from the request
         edited_title = request.POST.get('edited_title')
         edited_content = request.POST.get('edited_content')
         
+        # Check if the page already exists
+        if util.get_entry(edited_title):
+            return render(request, "encyclopedia/page_error.html", {
+                "new_page_title": edited_title,
+            })
+
         # Save the updated content to the file
         util.save_entry(edited_title, edited_content)
 
@@ -93,3 +99,4 @@ def save_edit(request):
     else:
         # Handle GET request if necessary
         pass
+
