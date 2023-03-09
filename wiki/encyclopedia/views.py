@@ -61,5 +61,5 @@ def new_page(request):
     else:
         return render(request, "encyclopedia/new_page.html")
 
-def edit_page():
-    pass
+def edit_page(request):
+    return render(request, "encyclopedia/edit_page.html")
