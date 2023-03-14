@@ -55,7 +55,7 @@ ROOT_URLCONF = 'commerce.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['auctions/templates/'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

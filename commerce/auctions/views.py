@@ -61,3 +61,14 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/register.html")
+
+def create_listing(request):
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect("login", {
+            "message": "You must be logged in to create a listing."
+        })
+    elif request.user.is_authenticated:
+        return render(request, "auctions/create_listing.html")
+
+def save_listing(request):
+    return HttpResponseRedirect(reverse("index"))
