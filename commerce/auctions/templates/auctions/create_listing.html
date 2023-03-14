@@ -1,0 +1,14 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    {% if message %}
+        <div>{{ message }}</div>
+    {% endif %}
+
+    <form action="{% url 'save_listing' %}" method="post">
+        {% csrf_token %}
+        <input type="text" name="listing_title" placeholder="Listing Title" maxlength="255">
+        <input type="text" name="listing_description" placeholder="Listing Description">
+        <input type="submit" value="Save">
+    </form>
+{% endblock %}
