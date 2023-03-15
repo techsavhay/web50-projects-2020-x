@@ -5,8 +5,17 @@
 
     <ul>
         {% for entry in entries %}
-        <li><a href="{{ entry }}">{{ entry }}</a></li>
+        <li>
+            <a href="{{ entry }}"><h4>{{ entry.title }}  </h4></a>
+            <img src="{{ entry.image_url }}" alt="{{ entry.title }}" style="width: 150px; height: auto;">
+            <br  />
+            <p>{{ entry.desciption }}</p>
+            <br  />
+            <p>Category: {{ entry.category }}</p>
+            <p>Current Bid: £{{ entry.starting_bid}}</p>
+
+        </li>
         {% endfor %}
     </ul>
-    
+
 {% endblock %}
