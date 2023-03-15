@@ -63,12 +63,14 @@ def register(request):
         return render(request, "auctions/register.html")
 
 def create_listing(request):
+    category_choices = Listing.CATEGORY_CHOICES
+    context = {'category_choices': category_choices}
     if not request.method == "POST":
         if not request.user.is_authenticated:
             return HttpResponseRedirect("login", {
                 "message": "You must be logged in to create a listing."
             })
         elif request.user.is_authenticated:
-            return render(request, "auctions/create_listing.html")
+            return render(request, "auctions/create_listing.html", context)
     else:
         return HttpResponseRedirect(reverse("index")) # SAVE FORM TO DATABASE

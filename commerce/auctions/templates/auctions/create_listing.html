@@ -5,7 +5,7 @@
         <div>{{ message }}</div>
     {% endif %}
 
-    <form action="{% url 'save_listing' %}" method="post">
+    <form action="{% url 'create_listing' %}" method="post">
         {% csrf_token %}
         <input type="text" name="listing_title" placeholder="Listing Title" required maxlength="255" ><br \>
         <br  \>
@@ -13,7 +13,12 @@
         <br \>
         <input type="url" name="url"  placeholder="Input the URL of a photo to go with the listing.">
         <br  \>
-        <input type="text" name="text" placeholder="Category">
+        <label for="category">Category</label>
+        <select name="category" id="category">
+            {% for value, display in category_choices %}
+            <option value="{{ value }}">{{ display }}</option>
+            {% endfor %}
+        </select>
         <br  \>
         <input type="submit" value="Save">
     </form>
