@@ -8,7 +8,10 @@ from .models import User, Listing
 
 
 def index(request):
-    return render(request, "auctions/index.html")
+    all_entries = Listing.objects.all()
+    return render(request, "auctions/index.html", {
+        "entries":all_entries
+    })
 
 
 def login_view(request):
@@ -88,5 +91,12 @@ def create_listing(request):
         new_listing = Listing(title=title, description=description, image_url=image_url, category=category, seller_id=seller_id)
         new_listing.save()
         # return HttpResponseRedirect(reverse("listing_page")) # Uncomment once 'listing_page' view and URL pattern are created
-        return HttpResponseRedirect(reverse("index"))
+        return HttpResponseRedirect(reverse("index")) # SEE COMMENT ABOVE
+    
+def display_listings(request):
+    all_entries = Listing.objects.all()
+    print(all_entries)
+    return render(request, "auctions/index.html", {
+        "entries":all_entries
+    })
 
