@@ -3,7 +3,7 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-
+from decimal import Decimal
 from .models import User, Listing
 
 
@@ -72,9 +72,21 @@ def create_listing(request):
             })
         elif request.user.is_authenticated:
             return render(request, "auctions/create_listing.html", context)
+    # code below for POST requests only
     else:
         title = request.POST.get('title')
-        description = request.POST.get('desciption')
+        description = request.POST.get('description')
+        starting_bid = request.POST.get('starting_bid')
         image_url = request.POST.get('image_url')
         category = request.POST.get('category')
-        return HttpResponseRedirect(reverse("index")) # SAVE FORM TO DATABASE
+
+        #converts starting bid from a string to a decimal
+        starting_bid = Decimal(starting_bid)
+
+        #associate the logged in user with the listing
+        seller_id = request.user
+        new_listing = Listing(title=title, description=description, image_url=image_url, category=category, seller_id=seller_id)
+        new_listing.save()
+        # return HttpResponseRedirect(reverse("listing_page")) # Uncomment once 'listing_page' view and URL pattern are created
+        return HttpResponseRedirect(reverse("index"))
+
