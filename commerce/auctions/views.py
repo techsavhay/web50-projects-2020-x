@@ -73,4 +73,8 @@ def create_listing(request):
         elif request.user.is_authenticated:
             return render(request, "auctions/create_listing.html", context)
     else:
+        title = request.POST.get('title')
+        description = request.POST.get('desciption')
+        image_url = request.POST.get('image_url')
+        category = request.POST.get('category')
         return HttpResponseRedirect(reverse("index")) # SAVE FORM TO DATABASE
