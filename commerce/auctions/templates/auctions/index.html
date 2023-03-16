@@ -2,20 +2,21 @@
 
 {% block body %}
     <h2>Active Listings</h2>
-
+<div class="listing">
     <ul>
         {% for entry in entries %}
         <li>
             <a href="{{ entry }}"><h4>{{ entry.title }}  </h4></a>
             <img src="{{ entry.image_url }}" alt="{{ entry.title }}" style="width: 150px; height: auto;">
             <br  />
-            <p>{{ entry.desciption }}</p>
+            <p class="active_description">{{ entry.description }}</p>
             <br  />
             <p>Category: {{ entry.category }}</p>
-            <p>Current Bid: £{{ entry.starting_bid}}</p>
-
+            <p>Highest Bid: {{ entry.highest_bid|floatformat:2  }}</p>
         </li>
-        {% endfor %}
+    {% endfor %}
+    
     </ul>
+</div>
 
 {% endblock %}

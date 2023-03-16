@@ -3,15 +3,23 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.db.models import Max
+from django.db.models import F
 from decimal import Decimal
 from .models import User, Listing
 
 
 def index(request):
-    all_entries = Listing.objects.all()
+    listings = Listing.objects.annotate(
+        highest_bid=Max(
+            'bids__bid_amount',
+            default=F('starting_bid')  # Use starting_bid as the default value if there are no bids
+        )
+    )
     return render(request, "auctions/index.html", {
-        "entries":all_entries
+        "entries": listings
     })
+
 
 
 def login_view(request):
@@ -88,15 +96,16 @@ def create_listing(request):
 
         #associate the logged in user with the listing
         seller_id = request.user
-        new_listing = Listing(title=title, description=description, image_url=image_url, category=category, seller_id=seller_id)
+        new_listing = Listing(title=title, description=description, image_url=image_url, category=category, seller_id=seller_id, starting_bid=starting_bid)
         new_listing.save()
         # return HttpResponseRedirect(reverse("listing_page")) # Uncomment once 'listing_page' view and URL pattern are created
-        return HttpResponseRedirect(reverse("index")) # SEE COMMENT ABOVE
+        return HttpResponseRedirect(reverse("index"))
+
     
-def display_listings(request):
+"""def display_listings(request):
     all_entries = Listing.objects.all()
     print(all_entries)
     return render(request, "auctions/index.html", {
         "entries":all_entries
-    })
+    })"""
 
