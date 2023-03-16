@@ -1,0 +1,21 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>{{ listing.title }}</h2>
+<div class="listing_page">
+    <ul>
+    
+        <li>
+            <h4>{{ listing.description }}  </h4>
+            <img src="{{ listing.image_url }}" alt="{{ listing.title }}" style="width: 150px; height: auto;">
+            <br  />
+            <p class="active_description">{{ listing.description }}</p>
+            <br  />
+            <p>Category: {{ listing.category }}</p>
+            <p>Highest Bid: {{ listing.highest_bid|floatformat:2  }}</p>
+        </li>
+    
+    </ul>
+</div>
+
+{% endblock %}

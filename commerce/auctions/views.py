@@ -102,10 +102,8 @@ def create_listing(request):
         return HttpResponseRedirect(reverse("index"))
 
     
-"""def display_listings(request):
-    all_entries = Listing.objects.all()
-    print(all_entries)
-    return render(request, "auctions/index.html", {
-        "entries":all_entries
-    })"""
-
+def listing_detail(request, pk):
+    listing= Listing.objects.get(pk=pk)
+    return render(request, "listing.html", {
+        "listing":listing
+    })

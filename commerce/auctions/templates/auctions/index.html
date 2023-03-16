@@ -6,7 +6,7 @@
     <ul>
         {% for entry in entries %}
         <li>
-            <a href="{{ entry }}"><h4>{{ entry.title }}  </h4></a>
+            <a href="{% url 'listing_detail' entry.pk %}"><h4>{{ entry.title }}</h4></a>
             <img src="{{ entry.image_url }}" alt="{{ entry.title }}" style="width: 150px; height: auto;">
             <br  />
             <p class="active_description">{{ entry.description }}</p>
