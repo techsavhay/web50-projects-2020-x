@@ -104,6 +104,6 @@ def create_listing(request):
     
 def listing_detail(request, pk):
     listing= Listing.objects.get(pk=pk)
-    return render(request, "listing.html", {
+    return render(request, "auctions/listing.html", {
         "listing":listing
     })
