@@ -105,9 +105,14 @@ def create_listing(request):
     
 def listing_detail(request, pk):
     listing= Listing.objects.get(pk=pk)
+    bid_object = Bids.objects.filter(listing_id=listing.id).first()
+
     if not request.method == "POST":
-        return render(request, "auctions/listing.html", {
-        "listing":listing})
+        context = {
+            "listing": listing,
+            "bid_amount": bid_object.bid_amount if bid_object else None
+        }
+        return render(request, "auctions/listing.html", context)
     
     #if it is POST method
     elif not request.user.is_authenticated:
@@ -117,7 +122,7 @@ def listing_detail(request, pk):
     else:
         bid = request.POST.get('bid')
         bid = Decimal(bid)
-        bid_object = Bids.objects.filter(listing_id=listing.id).first()
+        
 
 
     if bid_object is None or (bid > bid_object.bid_amount):
