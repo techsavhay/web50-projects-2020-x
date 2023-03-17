@@ -23,15 +23,7 @@ class Listing(models.Model):
     seller_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='listings')
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
 
-    #function to call the highest bid amount
-    def highest_bid(self):
-        related_bids = self.bids.all()
-        if related_bids:
-            highest_bid = related_bids.aggregate(max_bid=Max('bid_amount'))
-            highest_bid_obj = related_bids.get(bid_amount=highest_bid['max_bid'])
-            return highest_bid_obj
-        else:
-            return None
+
 
 class Bids(models.Model):
     bidder_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bids')

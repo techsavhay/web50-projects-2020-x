@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
@@ -6,7 +7,7 @@ from django.urls import reverse
 from django.db.models import Max
 from django.db.models import F
 from decimal import Decimal
-from .models import User, Listing
+from .models import User, Listing, Bids
 
 
 def index(request):
@@ -104,6 +105,24 @@ def create_listing(request):
     
 def listing_detail(request, pk):
     listing= Listing.objects.get(pk=pk)
-    return render(request, "auctions/listing.html", {
-        "listing":listing
-    })
+    if not request.method == "POST":
+        return render(request, "auctions/listing.html", {
+        "listing":listing})
+    
+    #if it is POST method
+    elif not request.user.is_authenticated:
+            messages.error(request, "You must be signed in to bid!")
+
+    else:
+        bid = request.POST.get('bid')
+
+    if bid > Bids.bid_amount:
+        bidder_id = request.user
+        new_bid = Bids(bidder_id=bidder_id, bid_amount=bid, listing_id=listing.id)
+        new_bid.save()
+        messages.success(request, "Your bid was successfull!")
+        HttpResponseRedirect(reverse("listing_detail"))
+    else:
+        messages.success(request, "Bid needs to be higher than current highest bid!")
+        HttpResponseRedirect(reverse("listing_detail"))
+        
