@@ -104,28 +104,32 @@ def create_listing(request):
 
     
 def listing_detail(request, pk):
-    listing= Listing.objects.get(pk=pk)
-    bid_object = Bids.objects.filter(listing_id=listing.id).first()
+    listing = Listing.objects.get(pk=pk)
+
+    # Get the highest bid amount for the current listing
+    highest_bid = Bids.objects.filter(listing_id=listing.id).aggregate(Max('bid_amount'))['bid_amount__max']
 
     if not request.method == "POST":
         context = {
             "listing": listing,
-            "bid_amount": bid_object.bid_amount if bid_object else None
+            "bid_amount": highest_bid if highest_bid else None
         }
         return render(request, "auctions/listing.html", context)
-    
-    #if it is POST method
+
+    # If it is a POST method
     elif not request.user.is_authenticated:
-            messages.error(request, "You must be signed in to bid!")
-            return HttpResponseRedirect(reverse("listing_detail", kwargs={'pk': pk}))
+        messages.error(request, "You must be signed in to bid!")
+        return HttpResponseRedirect(reverse("listing_detail", kwargs={'pk': pk}))
 
     else:
         bid = request.POST.get('bid')
+        if not bid:
+            messages.error(request, "Please enter a bid value.")
+            return HttpResponseRedirect(reverse("listing_detail", kwargs={'pk': pk}))
+
         bid = Decimal(bid)
-        
 
-
-    if bid_object is None or (bid > bid_object.bid_amount):
+    if highest_bid is None or (bid > highest_bid):
         bidder_id = request.user
         new_bid = Bids(bidder_id=bidder_id, bid_amount=bid, listing_id=listing)
         new_bid.save()
@@ -133,7 +137,6 @@ def listing_detail(request, pk):
         return HttpResponseRedirect(reverse("listing_detail", kwargs={'pk': pk}))
 
     else:
-        messages.success(request, "Bid needs to be higher than current highest bid!")
+        messages.success(request, "Bid needs to be higher than the current highest bid!")
         return HttpResponseRedirect(reverse("listing_detail", kwargs={'pk': pk}))
-
         

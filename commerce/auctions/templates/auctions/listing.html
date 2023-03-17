@@ -20,7 +20,7 @@
                 <br  />
             </li>
         </ul>
-        <h6>Current Highest Bid £{{ bid_amount }}</h6>
+        <h6>Current Highest Bid £{{ bid_amount|floatformat:2 }}</h6>
     <form action="" method="POST">
         {% csrf_token %}
         <label for='bid'>Bid £</label>
