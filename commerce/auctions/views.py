@@ -112,17 +112,23 @@ def listing_detail(request, pk):
     #if it is POST method
     elif not request.user.is_authenticated:
             messages.error(request, "You must be signed in to bid!")
+            return HttpResponseRedirect(reverse("listing_detail", kwargs={'pk': pk}))
 
     else:
         bid = request.POST.get('bid')
+        bid = Decimal(bid)
+        bid_object = Bids.objects.filter(listing_id=listing.id).first()
 
-    if bid > Bids.bid_amount:
+
+    if bid_object is None or (bid > bid_object.bid_amount):
         bidder_id = request.user
-        new_bid = Bids(bidder_id=bidder_id, bid_amount=bid, listing_id=listing.id)
+        new_bid = Bids(bidder_id=bidder_id, bid_amount=bid, listing_id=listing)
         new_bid.save()
-        messages.success(request, "Your bid was successfull!")
-        HttpResponseRedirect(reverse("listing_detail"))
+        messages.success(request, "Your bid was successful!")
+        return HttpResponseRedirect(reverse("listing_detail", kwargs={'pk': pk}))
+
     else:
         messages.success(request, "Bid needs to be higher than current highest bid!")
-        HttpResponseRedirect(reverse("listing_detail"))
+        return HttpResponseRedirect(reverse("listing_detail", kwargs={'pk': pk}))
+
         
