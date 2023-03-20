@@ -124,10 +124,19 @@ def listing_detail(request, pk):
     
     # watchbutton checks if watchbutton has been pressed and assigns it to the variable at the same time. if it has been pressed the code continues.
     elif watchbutton := request.POST.get('watchbutton'):
-            watcher_id= request.user
+        watcher_id = request.user
+        watchlist_item = Watchlist.objects.filter(watcher_id=watcher_id, watchlisting_id=listing)
+
+        # if its not already on the watchlist
+        if not watchlist_item.exists():
             new_watchlist = Watchlist(watcher_id=watcher_id, watchlisting_id=listing)
             new_watchlist.save()
-            return HttpResponseRedirect(reverse("watchlist"))
+            messages.success(request, "Item added to watchlist.")
+        else:
+            messages.warning(request, "Item is already in your watchlist.")
+
+        return HttpResponseRedirect(reverse("watchlist"))
+
                                         
     #dealing with bids                                    
     else:
@@ -148,4 +157,15 @@ def listing_detail(request, pk):
     else:
         messages.success(request, "Bid needs to be higher than the current highest bid!")
         return HttpResponseRedirect(reverse("listing_detail", kwargs={'pk': pk}))
-        
+    
+def watchlist(request):
+    watchlist_entries = Watchlist.objects.filter(watcher_id=request.user)
+    watchlist_with_bids = [
+        {
+            'watchlist_entry': entry,
+            'bids': entry.watchlisting_id.bids_set.all()
+        }
+        for entry in watchlist_entries
+    ]
+    return render(request, "auctions/watchlist.html", {"entries_with_bids": watchlist_with_bids})
+
