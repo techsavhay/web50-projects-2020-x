@@ -105,6 +105,12 @@ def create_listing(request):
     
 def listing_detail(request, pk):
     listing = Listing.objects.get(pk=pk)
+    is_on_watchlist = False
+
+    #checks if the listing the user is looking at is already on their watchlist
+    if request.user.is_authenticated:
+        is_on_watchlist = Watchlist.objects.filter(watcher_id=request.user, watchlisting_id=listing).exists()
+  
 
     # Get the highest bid amount for the current listing
     highest_bid = Bids.objects.filter(listing_id=listing.id).aggregate(Max('bid_amount'))['bid_amount__max']
@@ -113,7 +119,8 @@ def listing_detail(request, pk):
     if not request.method == "POST":
         context = {
             "listing": listing,
-            "bid_amount": highest_bid if highest_bid else None
+            "bid_amount": highest_bid if highest_bid else None,
+            "is_on_watchlist": is_on_watchlist
         }
         return render(request, "auctions/listing.html", context)
 
@@ -128,12 +135,13 @@ def listing_detail(request, pk):
         watchlist_item = Watchlist.objects.filter(watcher_id=watcher_id, watchlisting_id=listing)
 
         # if its not already on the watchlist
-        if not watchlist_item.exists():
+        if watchbutton == 'add':
             new_watchlist = Watchlist(watcher_id=watcher_id, watchlisting_id=listing)
             new_watchlist.save()
             messages.success(request, "Item added to watchlist.")
-        else:
-            messages.warning(request, "Item is already in your watchlist.")
+        elif watchbutton == 'remove':
+            watchlist_item.delete()
+            messages.warning(request, "Item removed from your watchlist.")
 
         return HttpResponseRedirect(reverse("watchlist"))
 
@@ -157,7 +165,8 @@ def listing_detail(request, pk):
     else:
         messages.success(request, "Bid needs to be higher than the current highest bid!")
         return HttpResponseRedirect(reverse("listing_detail", kwargs={'pk': pk}))
-    
+
+
 def watchlist(request):
     watchlist_entries = Watchlist.objects.filter(watcher_id=request.user)
     watchlist_with_bids = [

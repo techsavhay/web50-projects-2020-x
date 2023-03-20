@@ -29,8 +29,12 @@
     </form>
     <form action="" method="POST">
         {% csrf_token %}
-        <input type="hidden" name="watchbutton" value="True">
-        <button type="submit">Add to Watchlist</button>
+        {% if is_on_watchlist %}
+    <button type="submit" name="watchbutton" value="remove">Remove from Watchlist</button>
+{% else %}
+    <button type="submit" name="watchbutton" value="add">Add to Watchlist</button>
+{% endif %}
+
     </form>
     
 </div>
