@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.db.models import Max
 from django.db.models import F
 from decimal import Decimal
-from .models import User, Listing, Bids
+from .models import User, Listing, Bids, Watchlist
 
 
 def index(request):
@@ -108,8 +108,8 @@ def listing_detail(request, pk):
 
     # Get the highest bid amount for the current listing
     highest_bid = Bids.objects.filter(listing_id=listing.id).aggregate(Max('bid_amount'))['bid_amount__max']
-    
-    # If it is a POST method
+
+    # If it is GET method:
     if not request.method == "POST":
         context = {
             "listing": listing,
@@ -117,11 +117,19 @@ def listing_detail(request, pk):
         }
         return render(request, "auctions/listing.html", context)
 
-    
+    #if it is POST method
     elif not request.user.is_authenticated:
-        messages.error(request, "You must be signed in to bid!")
+        messages.error(request, "You must be signed in to complete this action!")
         return HttpResponseRedirect(reverse("listing_detail", kwargs={'pk': pk}))
-
+    
+    # watchbutton checks if watchbutton has been pressed and assigns it to the variable at the same time. if it has been pressed the code continues.
+    elif watchbutton := request.POST.get('watchbutton'):
+            watcher_id= request.user
+            new_watchlist = Watchlist(watcher_id=watcher_id, watchlisting_id=listing)
+            new_watchlist.save()
+            return HttpResponseRedirect(reverse("watchlist"))
+                                        
+    #dealing with bids                                    
     else:
         bid = request.POST.get('bid')
         if not bid:
