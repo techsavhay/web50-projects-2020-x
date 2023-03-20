@@ -12,7 +12,7 @@
             <p class="active_description">{{ entry.description }}</p>
             <br  />
             <p>Category: {{ entry.category }}</p>
-            <p>Highest Bid: {{ entry.highest_bid|floatformat:2 }}</p>
+            <p>Highest Bid: £{{ entry.highest_bid|floatformat:2 }}</p>
         </li>
     {% endfor %}
     </ul>

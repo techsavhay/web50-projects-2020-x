@@ -110,17 +110,27 @@ def listing_detail(request, pk):
     #checks if the listing the user is looking at is already on their watchlist
     if request.user.is_authenticated:
         is_on_watchlist = Watchlist.objects.filter(watcher_id=request.user, watchlisting_id=listing).exists()
+        #check if the item is being sold by the signed in user
+        is_users_listing = Listing.objects.filter(seller_id=request.user, id=listing.id).exists()
+        
+        # get highest bidder listing is finished TO DO
+        if listing.active == "False":
+            winning_bidder = Bids.objects.filter(listing_id=listing.id, bidder_id=request.user).order_by('bid_amount').first()
+        
   
 
     # Get the highest bid amount for the current listing
     highest_bid = Bids.objects.filter(listing_id=listing.id).aggregate(Max('bid_amount'))['bid_amount__max']
+
 
     # If it is GET method:
     if not request.method == "POST":
         context = {
             "listing": listing,
             "bid_amount": highest_bid if highest_bid else None,
-            "is_on_watchlist": is_on_watchlist
+            "is_on_watchlist": is_on_watchlist,
+            "is_users_listing": is_users_listing,
+            "winning_bidder": winning_bidder,
         }
         return render(request, "auctions/listing.html", context)
 
@@ -144,6 +154,12 @@ def listing_detail(request, pk):
             messages.warning(request, "Item removed from your watchlist.")
 
         return HttpResponseRedirect(reverse("watchlist"))
+
+    #closing the auction
+    elif closeauction := request.POST.get('closeauction') and Listing.objects.filter(seller_id=request.user, id=listing.id).exists():
+        listing.active = False
+        listing.save(update_fields=['active'])
+        return HttpResponseRedirect(reverse("listing_detail"))
 
                                         
     #dealing with bids                                    
