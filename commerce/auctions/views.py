@@ -108,7 +108,8 @@ def listing_detail(request, pk):
 
     # Get the highest bid amount for the current listing
     highest_bid = Bids.objects.filter(listing_id=listing.id).aggregate(Max('bid_amount'))['bid_amount__max']
-
+    
+    # If it is a POST method
     if not request.method == "POST":
         context = {
             "listing": listing,
@@ -116,7 +117,7 @@ def listing_detail(request, pk):
         }
         return render(request, "auctions/listing.html", context)
 
-    # If it is a POST method
+    
     elif not request.user.is_authenticated:
         messages.error(request, "You must be signed in to bid!")
         return HttpResponseRedirect(reverse("listing_detail", kwargs={'pk': pk}))

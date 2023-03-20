@@ -27,5 +27,11 @@
         <input type="number" name="bid" placeholder="{{ bid_amount|floatformat:2 }}" step="0.01" min="{{ bid_amount|floatformat:2 }}" max="9999999999">
         <input type="submit" value="Bid">
     </form>
+    <form action="" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="clicked" value="True">
+        <button type="submit">Add to Watchlist</button>
+    </form>
+    
 </div>
 {% endblock %}
