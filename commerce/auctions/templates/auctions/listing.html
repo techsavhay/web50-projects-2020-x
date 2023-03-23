@@ -10,8 +10,8 @@
 
 {% block body %}
 
-{% if winning_bidder %}
-<h3>Congratulations {{ bid.bidder_id }} you have won this auction!</h3>
+{% if has_won_auction %}
+    <p class="alert alert-success">Congratulations! You have won this auction!</p>
 {% endif %}
 
     <h2>{{ listing.title }}</h2>
@@ -30,7 +30,7 @@
     <form action="" method="POST">
         {% csrf_token %}
         <label for='bid'>Bid £</label>
-        <input type="number" name="bid" placeholder="{{ bid_amount|floatformat:2 }}" step="0.01" min="{{ bid_amount|floatformat:2 }}" max="9999999999">
+        <input type="number" name="bid" placeholder="{{ bid_amount|default:listing.starting_bid|floatformat:2 }}" step="0.01" min="{{ bid_amount|default:listing.starting_bid|floatformat:2 }}" max="9999999999">
         <input type="submit" value="Bid">
     </form>
     

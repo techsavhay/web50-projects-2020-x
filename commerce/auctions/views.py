@@ -5,8 +5,7 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from django.db.models import Max
-from django.db.models import F
+from django.db.models import F, Max, Q
 from decimal import Decimal
 from .models import User, Listing, Bids, Watchlist
 
@@ -103,54 +102,48 @@ def create_listing(request):
         # return HttpResponseRedirect(reverse("listing_page")) # Uncomment once 'listing_page' view and URL pattern are created
         return HttpResponseRedirect(reverse("index"))
 
-    
+
+
 def listing_detail(request, pk):
-    listing = Listing.objects.get(pk=pk, active=True)
+    listing = Listing.objects.get(pk=pk)
     is_on_watchlist = False
     winning_bidder = None
+    has_won_auction = False
 
-    #checks if the listing the user is looking at is already on their watchlist
     if request.user.is_authenticated:
         is_on_watchlist = Watchlist.objects.filter(watcher_id=request.user, watchlisting_id=listing).exists()
-        #check if the item is being sold by the signed in user
         is_users_listing_active = Listing.objects.filter(seller_id=request.user, id=listing.id, active=True).exists()
-        
-        # get highest bidder listing is finished 
+
         if listing.active == False:
             winning_bidder = Bids.objects.filter(listing_id=listing.id, bidder_id=request.user).order_by('-bid_amount').first()
 
-        if  request.method == "POST":
-            context = {
-                "winning_bidder":winning_bidder
-            }
-            return render(request, "auctions/index.html", context)
-  
-
-    # Get the highest bid amount for the current listing
     highest_bid = Bids.objects.filter(listing_id=listing.id).aggregate(Max('bid_amount'))['bid_amount__max']
 
+    if highest_bid is not None:
+        winning_bid = Bids.objects.get(Q(listing_id=listing.id) & Q(bid_amount=highest_bid))
 
-    # If it is GET method:
+        if not listing.active and request.user.is_authenticated and winning_bid.bidder_id == request.user:
+            has_won_auction = True
+
     if not request.method == "POST":
         context = {
             "listing": listing,
             "bid_amount": highest_bid if highest_bid else None,
             "is_on_watchlist": is_on_watchlist,
             "is_users_listing_active": is_users_listing_active,
+            "has_won_auction": has_won_auction,
         }
         return render(request, "auctions/listing.html", context)
 
-    #if it is POST method
+    # For POST requests:
     elif not request.user.is_authenticated:
         messages.error(request, "You must be signed in to complete this action!")
         return HttpResponseRedirect(reverse("listing_detail", kwargs={'pk': pk}))
-    
-    # watchbutton checks if watchbutton has been pressed and assigns it to the variable at the same time. if it has been pressed the code continues.
+
     elif watchbutton := request.POST.get('watchbutton'):
         watcher_id = request.user
         watchlist_item = Watchlist.objects.filter(watcher_id=watcher_id, watchlisting_id=listing)
 
-        # if its not already on the watchlist
         if watchbutton == 'add':
             new_watchlist = Watchlist(watcher_id=watcher_id, watchlisting_id=listing)
             new_watchlist.save()
@@ -161,16 +154,12 @@ def listing_detail(request, pk):
 
         return HttpResponseRedirect(reverse("watchlist"))
 
-    #closing the auction
     elif (closeauction := request.POST.get('closeauction')) and Listing.objects.filter(seller_id=request.user, id=listing.id).exists():
-        print("Close auction value:", closeauction)
         listing.active = False
-        print("Listing active before saving:", listing.active)
         listing.save(update_fields=['active'])
-        print("Listing active after saving:", listing.active)
         return HttpResponseRedirect(reverse("listing_detail", kwargs={'pk': pk}))
-                             
-    #dealing with bids                                    
+
+    # Handling bids:
     else:
         bid = request.POST.get('bid')
         if not bid:
@@ -179,16 +168,18 @@ def listing_detail(request, pk):
 
         bid = Decimal(bid)
 
-    if highest_bid is None or (bid > highest_bid):
-        bidder_id = request.user
-        new_bid = Bids(bidder_id=bidder_id, bid_amount=bid, listing_id=listing)
-        new_bid.save()
-        messages.success(request, "Your bid was successful!")
-        return HttpResponseRedirect(reverse("listing_detail", kwargs={'pk': pk}))
+        if highest_bid is None or (bid > highest_bid) and listing.active == True:
+            bidder_id = request.user
+            new_bid = Bids(bidder_id=bidder_id, bid_amount=bid, listing_id=listing)
+            new_bid.save()
+            messages.success(request, "Your bid was successful!")
+            return HttpResponseRedirect(reverse("listing_detail", kwargs={'pk': pk}))
 
-    else:
-        messages.success(request, "Bid needs to be higher than the current highest bid!")
-        return HttpResponseRedirect(reverse("listing_detail", kwargs={'pk': pk}))
+        else:
+            messages.success(request, "Bid needs to be higher than the current highest bid!")
+            return HttpResponseRedirect(reverse("listing_detail", kwargs={'pk': pk}))
+
+
 
 
 def watchlist(request):
