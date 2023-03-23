@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.db.models import F, Max, Q
 from decimal import Decimal
 from .models import User, Listing, Bids, Watchlist, Comments
+from django.shortcuts import get_object_or_404
 
 
 def index(request):
@@ -217,5 +218,10 @@ def categories(request):
 
 def specific_category(request):
     sc = request.GET.get('sc')
-    return render(request, "auctions/specific_category.html",
-                  {"sc":sc})
+    category_entries = Listing.objects.filter(category=sc).annotate(
+        highest_bid=Max(
+            'bids__bid_amount',
+            default=F('starting_bid')  # Use starting_bid as the default value if there are no bids
+        )
+    )
+    return render(request, "auctions/specific_category.html", {"entries": category_entries, "sc": sc})
