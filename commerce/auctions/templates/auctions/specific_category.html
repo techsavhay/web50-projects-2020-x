@@ -1,0 +1,19 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>{{ sc }}</h2>
+<div class="listing">
+    <ul>
+        {% for category, display_text in CATEGORY_CHOICES %}
+        <li>
+            <h4>
+            <a href="{% url 'specific_category' %}?sc={{ category }}">
+             {{ display_text }}
+            </a>
+            </h4>
+        </li>
+    {% endfor %}
+    </ul>
+</div>
+
+{% endblock %}

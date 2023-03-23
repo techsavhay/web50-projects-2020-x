@@ -7,7 +7,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.db.models import F, Max, Q
 from decimal import Decimal
-from .models import User, Listing, Bids, Watchlist
+from .models import User, Listing, Bids, Watchlist, Comments
 
 
 def index(request):
@@ -99,7 +99,6 @@ def create_listing(request):
         seller_id = request.user
         new_listing = Listing(title=title, description=description, image_url=image_url, category=category, seller_id=seller_id, starting_bid=starting_bid)
         new_listing.save()
-        # return HttpResponseRedirect(reverse("listing_page")) # Uncomment once 'listing_page' view and URL pattern are created
         return HttpResponseRedirect(reverse("index"))
 
 
@@ -109,6 +108,7 @@ def listing_detail(request, pk):
     is_on_watchlist = False
     winning_bidder = None
     has_won_auction = False
+    comments = Comments.objects.filter(listing_id=listing)
 
     if request.user.is_authenticated:
         is_on_watchlist = Watchlist.objects.filter(watcher_id=request.user, watchlisting_id=listing).exists()
@@ -132,6 +132,7 @@ def listing_detail(request, pk):
             "is_on_watchlist": is_on_watchlist,
             "is_users_listing_active": is_users_listing_active,
             "has_won_auction": has_won_auction,
+            "comments":comments
         }
         return render(request, "auctions/listing.html", context)
 
@@ -139,7 +140,17 @@ def listing_detail(request, pk):
     elif not request.user.is_authenticated:
         messages.error(request, "You must be signed in to complete this action!")
         return HttpResponseRedirect(reverse("listing_detail", kwargs={'pk': pk}))
+    
+    #POSTed comments handling
+    elif comment := request.POST.get('comment'):
+        listing_id = listing
+        commenter_id = request.user
+        new_comment = Comments(listing_id=listing_id, commenter_id=commenter_id, comment=comment)
+        new_comment.save()
+        return HttpResponseRedirect(reverse("listing_detail", kwargs={'pk': pk}))
 
+
+    #watchbutton handling
     elif watchbutton := request.POST.get('watchbutton'):
         watcher_id = request.user
         watchlist_item = Watchlist.objects.filter(watcher_id=watcher_id, watchlisting_id=listing)
@@ -193,3 +204,18 @@ def watchlist(request):
     ]
     return render(request, "auctions/watchlist.html", {"entries_with_bids": watchlist_with_bids})
 
+def categories(request):
+    CATEGORY_CHOICES = [
+        ('books', 'Books'),
+        ('electronics', 'Electronics'),
+        ('fashion', 'Fashion'),
+        ('home', 'Home'),
+        ('sports', 'Sports'),
+    ]
+    return render(request, "auctions/categories.html",
+                  {"CATEGORY_CHOICES":CATEGORY_CHOICES})
+
+def specific_category(request):
+    sc = request.GET.get('sc')
+    return render(request, "auctions/specific_category.html",
+                  {"sc":sc})

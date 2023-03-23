@@ -26,7 +26,25 @@
             </li>
         </ul>
         <h6>Current Highest Bid £{{ bid_amount|floatformat:2 }}</h6>
-        <p>Debug: is_users_listing_active: {{ is_users_listing_active }}</p>
+        <p>Comments:</p>
+
+        {% if comments %}
+        {% for comment in comments %}
+        <ul>
+            <li>
+                <p class="comment">{{ comment.comment }}</p>
+            </li>
+        </ul>
+        {% endfor %}
+        {% endif %}
+        
+
+
+    <form action="" method="POST">
+        {% csrf_token %}
+        <input style="width: 500px;" type="text" name="comment" placeholder="Add comment">
+        <input type="submit" value="Save">
+    </form>
     <form action="" method="POST">
         {% csrf_token %}
         <label for='bid'>Bid £</label>
