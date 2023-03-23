@@ -4,8 +4,8 @@ body {
 
 
 .listing {
-    border: 1px solid black; /* Creates a border around the listing */
-    padding: 10px; /* Adds some space between the border and listing content */
+    border: 1px solid rgb(209, 11, 11); /* Creates a border around the listing */
+    padding: 30px; /* Adds some space between the border and listing content */
     margin-bottom: 10px; /* Adds space between listings */
     font-weight: bold;
   }

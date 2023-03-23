@@ -9,6 +9,11 @@
 {% endif %}
 
 {% block body %}
+
+{% if winning_bidder %}
+<h3>Congratulations {{ bid.bidder_id }} you have won this auction!</h3>
+{% endif %}
+
     <h2>{{ listing.title }}</h2>
     <p>Category: {{ listing.category }}</p>
     <div class="listing_page">

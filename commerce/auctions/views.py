@@ -106,6 +106,7 @@ def create_listing(request):
 def listing_detail(request, pk):
     listing = Listing.objects.get(pk=pk)
     is_on_watchlist = False
+    winning_bidder = None
 
     #checks if the listing the user is looking at is already on their watchlist
     if request.user.is_authenticated:
@@ -113,10 +114,15 @@ def listing_detail(request, pk):
         #check if the item is being sold by the signed in user
         is_users_listing = Listing.objects.filter(seller_id=request.user, id=listing.id).exists()
         
-        # get highest bidder listing is finished TO DO
+        # get highest bidder listing is finished 
         if listing.active == "False":
-            winning_bidder = Bids.objects.filter(listing_id=listing.id, bidder_id=request.user).order_by('bid_amount').first()
-        
+            winning_bidder = Bids.objects.filter(listing_id=listing.id, bidder_id=request.user).order_by('-bid_amount').first()
+
+        if  request.method == "POST":
+            context = {
+                "winning_bidder":winning_bidder
+            }
+            return render(request, "auctions/index.html", context)
   
 
     # Get the highest bid amount for the current listing
@@ -130,7 +136,6 @@ def listing_detail(request, pk):
             "bid_amount": highest_bid if highest_bid else None,
             "is_on_watchlist": is_on_watchlist,
             "is_users_listing": is_users_listing,
-            "winning_bidder": winning_bidder,
         }
         return render(request, "auctions/listing.html", context)
 
@@ -156,10 +161,10 @@ def listing_detail(request, pk):
         return HttpResponseRedirect(reverse("watchlist"))
 
     #closing the auction
-    elif closeauction := request.POST.get('closeauction') and Listing.objects.filter(seller_id=request.user, id=listing.id).exists():
+    elif (closeauction := request.POST.get('closeauction')) and Listing.objects.filter(seller_id=request.user, id=listing.id).exists():
         listing.active = False
         listing.save(update_fields=['active'])
-        return HttpResponseRedirect(reverse("listing_detail"))
+        return HttpResponseRedirect(reverse("listing_detail", kwargs={'pk': pk}))
 
                                         
     #dealing with bids                                    

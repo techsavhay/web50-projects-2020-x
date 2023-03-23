@@ -24,8 +24,6 @@ class Listing(models.Model):
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
     active = models.BooleanField(default=True)
 
-
-
 class Bids(models.Model):
     bidder_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bids')
     listing_id = models.ForeignKey(Listing, on_delete=models.CASCADE)
