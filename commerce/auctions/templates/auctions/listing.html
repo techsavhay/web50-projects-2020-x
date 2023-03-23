@@ -26,6 +26,7 @@
             </li>
         </ul>
         <h6>Current Highest Bid £{{ bid_amount|floatformat:2 }}</h6>
+        <p>Debug: is_users_listing_active: {{ is_users_listing_active }}</p>
     <form action="" method="POST">
         {% csrf_token %}
         <label for='bid'>Bid £</label>
@@ -43,7 +44,7 @@
     </form>
     <form action="" method="POST">
         {% csrf_token %}
-        {% if is_users_listing %}
+        {% if is_users_listing_active %}
         <button type="submit" name="closeauction" value="closeauction">Close Auction</button>
         {% endif %}
     </form>

@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
@@ -104,7 +105,7 @@ def create_listing(request):
 
     
 def listing_detail(request, pk):
-    listing = Listing.objects.get(pk=pk)
+    listing = Listing.objects.get(pk=pk, active=True)
     is_on_watchlist = False
     winning_bidder = None
 
@@ -112,10 +113,10 @@ def listing_detail(request, pk):
     if request.user.is_authenticated:
         is_on_watchlist = Watchlist.objects.filter(watcher_id=request.user, watchlisting_id=listing).exists()
         #check if the item is being sold by the signed in user
-        is_users_listing = Listing.objects.filter(seller_id=request.user, id=listing.id).exists()
+        is_users_listing_active = Listing.objects.filter(seller_id=request.user, id=listing.id, active=True).exists()
         
         # get highest bidder listing is finished 
-        if listing.active == "False":
+        if listing.active == False:
             winning_bidder = Bids.objects.filter(listing_id=listing.id, bidder_id=request.user).order_by('-bid_amount').first()
 
         if  request.method == "POST":
@@ -135,7 +136,7 @@ def listing_detail(request, pk):
             "listing": listing,
             "bid_amount": highest_bid if highest_bid else None,
             "is_on_watchlist": is_on_watchlist,
-            "is_users_listing": is_users_listing,
+            "is_users_listing_active": is_users_listing_active,
         }
         return render(request, "auctions/listing.html", context)
 
@@ -162,11 +163,13 @@ def listing_detail(request, pk):
 
     #closing the auction
     elif (closeauction := request.POST.get('closeauction')) and Listing.objects.filter(seller_id=request.user, id=listing.id).exists():
+        print("Close auction value:", closeauction)
         listing.active = False
+        print("Listing active before saving:", listing.active)
         listing.save(update_fields=['active'])
+        print("Listing active after saving:", listing.active)
         return HttpResponseRedirect(reverse("listing_detail", kwargs={'pk': pk}))
-
-                                        
+                             
     #dealing with bids                                    
     else:
         bid = request.POST.get('bid')
