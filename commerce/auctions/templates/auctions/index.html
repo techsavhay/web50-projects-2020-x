@@ -18,4 +18,21 @@
     </ul>
 </div>
 
+<h2>Inactive Listings</h2>
+<div class="listing">
+    <ul>
+        {% for entry in inactive_listings %}
+        <li>
+            <a href="{% url 'listing_detail' entry.pk %}"><h4>{{ entry.title }}</h4></a>
+            <img src="{{ entry.image_url }}" alt="{{ entry.title }}" style="width: 150px; height: auto;">
+            <br  />
+            <p class="active_description">{{ entry.description }}</p>
+            <br  />
+            <p>Category: {{ entry.category }}</p>
+            <p>Highest Bid: £{{ entry.highest_bid|floatformat:2 }}</p>
+        </li>
+    {% endfor %}
+    </ul>
+</div>
+
 {% endblock %}

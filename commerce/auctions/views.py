@@ -15,11 +15,15 @@ def index(request):
     listings = Listing.objects.annotate(
         highest_bid=Max(
             'bids__bid_amount',
-            default=F('starting_bid')  # Use starting_bid as the default value if there are no bids
-        )
-    )
+            default=F('starting_bid'))).filter(active=True)
+    
+    inactive_listings = Listing.objects.annotate(
+        highest_bid=Max(
+            'bids__bid_amount',
+            default=F('starting_bid'))).filter(active=False)
+    
     return render(request, "auctions/index.html", {
-        "entries": listings
+        "entries": listings, "inactive_listings": inactive_listings
     })
 
 
@@ -110,6 +114,7 @@ def listing_detail(request, pk):
     winning_bidder = None
     has_won_auction = False
     comments = Comments.objects.filter(listing_id=listing)
+    is_users_listing_active = False
 
     if request.user.is_authenticated:
         is_on_watchlist = Watchlist.objects.filter(watcher_id=request.user, watchlisting_id=listing).exists()
