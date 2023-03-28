@@ -146,8 +146,8 @@ def listing_detail(request, pk):
     elif not request.user.is_authenticated:
         messages.error(request, "You must be signed in to complete this action!")
         return HttpResponseRedirect(reverse("listing_detail", kwargs={'pk': pk}))
-    
-    #POSTed comments handling
+
+    # POSTed comments handling
     elif comment := request.POST.get('comment'):
         listing_id = listing
         commenter_id = request.user
@@ -155,8 +155,7 @@ def listing_detail(request, pk):
         new_comment.save()
         return HttpResponseRedirect(reverse("listing_detail", kwargs={'pk': pk}))
 
-
-    #watchbutton handling
+    # Watchlist handling
     elif watchbutton := request.POST.get('watchbutton'):
         watcher_id = request.user
         watchlist_item = Watchlist.objects.filter(watcher_id=watcher_id, watchlisting_id=listing)
@@ -171,6 +170,7 @@ def listing_detail(request, pk):
 
         return HttpResponseRedirect(reverse("watchlist"))
 
+    # Close auction handling
     elif (closeauction := request.POST.get('closeauction')) and Listing.objects.filter(seller_id=request.user, id=listing.id).exists():
         listing.active = False
         listing.save(update_fields=['active'])
@@ -188,13 +188,8 @@ def listing_detail(request, pk):
         if highest_bid is None or (bid > highest_bid) and listing.active == True:
             bidder_id = request.user
             new_bid = Bids(bidder_id=bidder_id, bid_amount=bid, listing_id=listing)
-            new_bid.save()
-            messages.success(request, "Your bid was successful!")
-            return HttpResponseRedirect(reverse("listing_detail", kwargs={'pk': pk}))
+            new_bid.save
 
-        else:
-            messages.success(request, "Bid needs to be higher than the current highest bid!")
-            return HttpResponseRedirect(reverse("listing_detail", kwargs={'pk': pk}))
 
 
 
