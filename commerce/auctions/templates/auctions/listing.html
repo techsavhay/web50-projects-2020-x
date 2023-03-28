@@ -15,7 +15,9 @@
 {% endif %}
 
     <h2>{{ listing.title }}</h2>
-    <p>Category: {{ listing.category }}</p>
+    Category: <a href="{% url 'specific_category' %}?sc={{ listing.category }}">
+       {{ listing.category }}
+       </a>
     <div class="listing_page">
         <ul>
             <li>
