@@ -110,7 +110,6 @@ def create_listing(request):
 
 
 def listing_detail(request, pk):
-    messages.info(request, "This is a test message.")
     listing = Listing.objects.get(pk=pk)
     is_on_watchlist = False
     winning_bidder = None
@@ -140,8 +139,9 @@ def listing_detail(request, pk):
             "is_on_watchlist": is_on_watchlist,
             "is_users_listing_active": is_users_listing_active,
             "has_won_auction": has_won_auction,
-            "comments":comments
-        }
+            "comments":comments,
+            "messages": get_messages(request)
+        } 
         return render(request, "auctions/listing.html", context)
 
     # For POST requests:
@@ -156,7 +156,6 @@ def listing_detail(request, pk):
         new_comment = Comments(listing_id=listing_id, commenter_id=commenter_id, comment=comment)
         new_comment.save()
         return HttpResponseRedirect(reverse("listing_detail", kwargs={'pk': pk}))
-
 
     #watchbutton handling
     elif watchbutton := request.POST.get('watchbutton'):
@@ -187,6 +186,10 @@ def listing_detail(request, pk):
 
         bid = Decimal(bid)
 
+        if bid < listing.starting_bid:
+            messages.error(request, "Bid needs to be higher than the starting bid!")
+            return HttpResponseRedirect(reverse("listing_detail", kwargs={'pk': pk}))
+
         if highest_bid is None or (bid > highest_bid) and listing.active == True:
             bidder_id = request.user
             new_bid = Bids(bidder_id=bidder_id, bid_amount=bid, listing_id=listing)
@@ -197,6 +200,7 @@ def listing_detail(request, pk):
         else:
             messages.error(request, "Bid needs to be higher than the current highest bid!")
             return HttpResponseRedirect(reverse("listing_detail", kwargs={'pk': pk}))
+
 
 
 

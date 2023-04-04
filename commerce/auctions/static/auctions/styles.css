@@ -1,11 +1,48 @@
 body {
     padding: 10px;
-}
-
-
-.listing {
-    border: 1px solid rgb(209, 11, 11); /* Creates a border around the listing */
-    padding: 30px; /* Adds some space between the border and listing content */
-    margin-bottom: 10px; /* Adds space between listings */
-    font-weight: bold;
   }
+  
+  .listing {
+    border: 1px solid #ccc; /* Change border color to a lighter shade */
+    border-radius: 5px; /* Add rounded corners */
+    padding: 30px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    background-color: #f8f9fa; /* Add a light background color */
+  }
+  
+  /* Add a margin to the top of the page to prevent the navbar from overlapping the content */
+  body > * {
+    margin-top: 20px;
+  }
+  
+  /* Style the listing title */
+  .listing h4 {
+    margin-bottom: 10px;
+  }
+  
+/* Style the listing image */
+.listing img {
+    width: 150px;
+    height: auto;
+    margin-bottom: 10px;
+  }
+  
+  /* Style the listing description */
+  .listing .active_description {
+    font-weight: normal;
+    margin-bottom: 10px;
+  }
+  
+  /* Style the listing details */
+  .listing p {
+    font-weight: normal;
+    margin-bottom: 5px;
+  }
+  
+  /* Add some space between the listing title and the listing details */
+  .listing h4 + p {
+    margin-top: 10px;
+  }
+  
+  
