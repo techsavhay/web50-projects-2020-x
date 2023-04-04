@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.messages import get_messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
@@ -109,6 +110,7 @@ def create_listing(request):
 
 
 def listing_detail(request, pk):
+    messages.info(request, "This is a test message.")
     listing = Listing.objects.get(pk=pk)
     is_on_watchlist = False
     winning_bidder = None
@@ -193,7 +195,7 @@ def listing_detail(request, pk):
             return HttpResponseRedirect(reverse("listing_detail", kwargs={'pk': pk}))
 
         else:
-            messages.success(request, "Bid needs to be higher than the current highest bid!")
+            messages.error(request, "Bid needs to be higher than the current highest bid!")
             return HttpResponseRedirect(reverse("listing_detail", kwargs={'pk': pk}))
 
 
