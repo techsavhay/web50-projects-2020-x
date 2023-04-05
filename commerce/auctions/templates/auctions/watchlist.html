@@ -2,22 +2,21 @@
 
 {% block body %}
     <h2>Watchlist</h2>
-<div class="listing">
-    <ul>
+    <div class="row">
         {% for entry_with_bids in entries_with_bids %}
         {% with listing=entry_with_bids.watchlist_entry.watchlisting_id %}
-        <li>
-            <a href="{% url 'listing_detail' listing.pk %}"><h4>{{ listing.title  }}</h4></a>
-            <img src="{{ listing.image_url }}" alt="{{ listing.title }}" style="width: 150px; height: auto;">
-            <br  />
-            <p class="active_description">{{ listing.description }}</p>
-            <br  />
-            <p>Category: {{ listing.category }}</p>
-            <p>Highest Bid: £{{ entry_with_bids.bids.last.bid_amount|floatformat:"2" }} </p>
-        </li>
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img src="{{ listing.image_url }}" class="card-img-top" alt="{{ listing.title }}" style="width: 100%; height: auto;">
+                    <div class="card-body">
+                        <a href="{% url 'listing_detail' listing.pk %}"><h4 class="card-title">{{ listing.title }}</h4></a>
+                        <p class="card-text">{{ listing.description }}</p>
+                        <p>Category: {{ listing.category }}</p>
+                        <p>Highest Bid: £{{ entry_with_bids.bids.last.bid_amount|floatformat:"2" }} </p>
+                    </div>
+                </div>
+            </div>
         {% endwith %}
         {% endfor %}
-    </ul>
-</div>
-
+    </div>
 {% endblock %}

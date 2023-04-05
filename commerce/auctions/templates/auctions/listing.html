@@ -8,8 +8,6 @@
 </div>
 {% endif %}
 
-
-
 {% block body %}
 
 {% if has_won_auction %}
@@ -20,56 +18,55 @@
     Category: <a href="{% url 'specific_category' %}?sc={{ listing.category }}">
        {{ listing.category }}
        </a>
-    <div class="listing_page">
-        <ul>
-            <li>
-                <img src="{{ listing.image_url }}" alt="{{ listing.title }}" style="width: 400px; height: auto;">
-                <br  />
-                <p class="active_description">{{ listing.description }}</p>
-                <br  />
-            </li>
-        </ul>
-        <h6>Current Highest Bid £{{ bid_amount|floatformat:2 }}</h6>
-        <p>Comments:</p>
+    <div class="row">
+        <div class="col-md-8">
+            <img src="{{ listing.image_url }}" alt="{{ listing.title }}" class="img-fluid">
+        </div>
+        <div class="col-md-4">
+            <p>{{ listing.description }}</p>
+            <h6>Current Highest Bid: £{{ bid_amount|floatformat:2 }}</h6>
 
-        {% if comments %}
-        {% for comment in comments %}
-        <ul>
-            <li>
-                <p class="comment">{{ comment.comment }}</p>
-            </li>
-        </ul>
-        {% endfor %}
-        {% endif %}
-        
-
-
-    <form action="" method="POST">
-        {% csrf_token %}
-        <input style="width: 500px;" type="text" name="comment" placeholder="Add comment">
-        <input type="submit" value="Save">
-    </form>
-    <form action="" method="POST">
-        {% csrf_token %}
-        <label for='bid'>Bid £</label>
-        <input type="number" name="bid" placeholder="{{ bid_amount|default:listing.starting_bid|floatformat:2 }}" min="{{ bid_amount|default:listing.starting_bid|floatformat:2|add:'0.01' }}" step="0.01"  max="9999999999">
-
-        <input type="submit" value="Bid">
-    </form>
-    
-    <form action="" method="POST">
-        {% csrf_token %}
-        {% if is_on_watchlist %}
-        <button type="submit" name="watchbutton" value="remove">Remove from Watchlist</button>
-        {% else %}
-        <button type="submit" name="watchbutton" value="add">Add to Watchlist<button>
-        {% endif %}
-    </form>
-    <form action="" method="POST">
-        {% csrf_token %}
-        {% if is_users_listing_active %}
-        <button type="submit" name="closeauction" value="closeauction">Close Auction</button>
-        {% endif %}
-    </form>
-</div>
+            {% if comments %}
+            <p>Comments:</p>
+            <ul class="list-unstyled">
+                {% for comment in comments %}
+                <li>
+                    <p class="comment">{{ comment.comment }}</p>
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            
+            <form action="" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input class="form-control" type="text" name="comment" placeholder="Add comment">
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+            <form action="" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for='bid'>Bid £</label>
+                    <input type="number" class="form-control" name="bid" placeholder="{{ bid_amount|default:listing.starting_bid|floatformat:2 }}" min="{{ bid_amount|default:listing.starting_bid|floatformat:2|add:'0.01' }}" step="0.01"  max="9999999999">
+                </div>
+                <button type="submit" class="btn btn-primary">Bid</button>
+            </form>
+            
+            <form action="" method="POST">
+                {% csrf_token %}
+                {% if is_on_watchlist %}
+                <button type="submit" class="btn btn-danger" name="watchbutton" value="remove">Remove from Watchlist</button>
+                {% else %}
+                <button type="submit" class="btn btn-success" name="watchbutton" value="add">Add to Watchlist</button>
+                {% endif %}
+            </form>
+            <form action="" method="POST">
+                {% csrf_token %}
+                {% if is_users_listing_active %}
+                <button type="submit" class="btn btn-danger" name="closeauction" value="closeauction">Close Auction</button>
+                {% endif %}
+            </form>
+        </div>
+    </div>
 {% endblock %}

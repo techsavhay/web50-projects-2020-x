@@ -2,37 +2,37 @@
 
 {% block body %}
     <h2>Active Listings</h2>
-<div class="listing">
-    <ul>
+    <div class="row">
         {% for entry in entries %}
-        <li>
-            <a href="{% url 'listing_detail' entry.pk %}"><h4>{{ entry.title }}</h4></a>
-            <img src="{{ entry.image_url }}" alt="{{ entry.title }}" style="width: 150px; height: auto;">
-            <br  />
-            <p class="active_description">{{ entry.description }}</p>
-            <br  />
-            <p>Category: {{ entry.category }}</p>
-            <p>Highest Bid: £{{ entry.highest_bid|floatformat:2 }}</p>
-        </li>
-    {% endfor %}
-    </ul>
-</div>
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <img src="{{ entry.image_url }}" class="card-img-top" alt="{{ entry.title }}" style="width: 100%; height: auto;">
+                <div class="card-body">
+                    <h5 class="card-title"><a href="{% url 'listing_detail' entry.pk %}">{{ entry.title }}</a></h5>
+                    <p class="card-text">{{ entry.description|truncatewords:20 }}</p>
+                    <p>Category: {{ entry.category }}</p>
+                    <p>Highest Bid: £{{ entry.highest_bid|floatformat:2 }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 
-<h2>Inactive Listings</h2>
-<div class="listing">
-    <ul>
+    <h2>Inactive Listings</h2>
+    <div class="row">
         {% for entry in inactive_listings %}
-        <li>
-            <a href="{% url 'listing_detail' entry.pk %}"><h4>{{ entry.title }}</h4></a>
-            <img src="{{ entry.image_url }}" alt="{{ entry.title }}" style="width: 150px; height: auto;">
-            <br  />
-            <p class="active_description">{{ entry.description }}</p>
-            <br  />
-            <p>Category: {{ entry.category }}</p>
-            <p>Highest Bid: £{{ entry.highest_bid|floatformat:2 }}</p>
-        </li>
-    {% endfor %}
-    </ul>
-</div>
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <img src="{{ entry.image_url }}" class="card-img-top" alt="{{ entry.title }}" style="width: 100%; height: auto;">
+                <div class="card-body">
+                    <h5 class="card-title"><a href="{% url 'listing_detail' entry.pk %}">{{ entry.title }}</a></h5>
+                    <p class="card-text">{{ entry.description|truncatewords:20 }}</p>
+                    <p>Category: {{ entry.category }}</p>
+                    <p>Highest Bid: £{{ entry.highest_bid|floatformat:2 }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 
 {% endblock %}

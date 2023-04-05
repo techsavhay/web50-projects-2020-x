@@ -1,14 +1,16 @@
 body {
     padding: 10px;
+    background-color: rgba(252, 251, 251, 0.719);
   }
   
   .listing {
-    border: 1px solid #ccc; /* Change border color to a lighter shade */
+    border: 2px solid #000000; /* Change border color to a lighter shade */
     border-radius: 5px; /* Add rounded corners */
     padding: 30px;
     margin-bottom: 10px;
     font-weight: bold;
-    background-color: #f8f9fa; /* Add a light background color */
+    background-color: rgba(205, 235, 253, 0.575);
+     /* Add a light background color */
   }
   
   /* Add a margin to the top of the page to prevent the navbar from overlapping the content */
