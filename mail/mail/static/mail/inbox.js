@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // By default, load the inbox
   load_mailbox('inbox');
-});
+
 
 function compose_email() {
 
@@ -34,10 +34,10 @@ function load_mailbox(mailbox) {
 
 function send_email() {
   // Selects the submit button to be used later.
-  const submit = document.querySelector('submit');
-  const compose_recipients  = document.querySelector('#compose-recipients');
+  const submit = document.querySelector('input[type="submit"]');
+  const compose_recipients = document.querySelector('#compose-recipients');
 
-  // Disable submit button by default so it doesnt submit blank emails:
+  // Disable submit button by default so it doesn't submit blank emails:
   submit.disabled = true;
 
   // Listen for input to be typed into the compose_recipients input field
@@ -48,12 +48,13 @@ function send_email() {
     else {
         submit.disabled = true;
     }
-}
+  }
 
   // Listen for submission of the form on the compose page, if submit is pressed run the following code
-  document.querySelector('form').onsubmit = () => {
-  
-    // set field name variables
+  document.querySelector('form').onsubmit = (event) => {
+    event.preventDefault();
+
+    // set field name variables which will be used later as keys in key:value pairs.
     var recipients = "recipients";
     var subject = "subject";
     var body = "body";
@@ -61,7 +62,7 @@ function send_email() {
     // create javascript object
     var obj = {};
 
-    // set object variable values from the form fields.
+    // set object variable key : value from the previously created keys and values taken from the form fields.
     obj[recipients] = compose_recipients.value;
     obj[subject] = document.querySelector('#compose-subject').value;
     obj[body] = document.querySelector('#compose-body').value;
@@ -71,20 +72,31 @@ function send_email() {
       method: 'POST',
       body: JSON.stringify(obj)
     })
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) {
+        // If the response is not okay, throw the response to be caught in the catch block
+        throw response;
+      }
+      return response.json();
+    })
     .then(result => {
       // Print result
-      console.log(result);
-      //if no errors come back load the sent mailbox
-      sent_mailbox(); // FUNCTION YET TO BE CREATED
+      console.log(result.message);
+      //if no errors come back load the sent mailbox function TO BE CODED!!!
+      load_mailbox('sent');
     })
-    
     .catch(error => {
-      // handle errors that might come back
-
+      if (error instanceof Response) {
+        error.json().then(err => {
+          console.error('Error:', err.error);
+          // Show an error message to the user
+        });
+      } else {
+        console.error('Error:', error.message);
+        // Show a generic error message to the user
+      }
     });
-        
-    
   }
-return false;
 }
+
+});
