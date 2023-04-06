@@ -50,32 +50,41 @@ function send_email() {
     }
 }
 
-  // Listen for submission of the form on the compose page
+  // Listen for submission of the form on the compose page, if submit is pressed run the following code
   document.querySelector('form').onsubmit = () => {
+  
+    // set field name variables
+    var recipients = "recipients";
+    var subject = "subject";
+    var body = "body";
 
-    
-    // get the value of the recipient, subject and body fields
-    const recipients = compose_recipients.value;
-    const subject = document.querySelector('#compose-subject').value;
-    const body = document.querySelector('#compose-body').value;
+    // create javascript object
+    var obj = {};
 
-    
-    obj[recipients]
+    // set object variable values from the form fields.
+    obj[recipients] = compose_recipients.value;
+    obj[subject] = document.querySelector('#compose-subject').value;
+    obj[body] = document.querySelector('#compose-body').value;
 
     // POST the email
     fetch('/emails', {
       method: 'POST',
-      body: JSON.stringify({
-          recipients: 'recipients',
-          subject: 'subject',
-          body: 'body'
-      })
+      body: JSON.stringify(obj)
     })
     .then(response => response.json())
     .then(result => {
-        // Print result
-        console.log(result);
-    });
-  }
+      // Print result
+      console.log(result);
+      //if no errors come back load the sent mailbox
+      sent_mailbox(); // FUNCTION YET TO BE CREATED
+    })
+    
+    .catch(error => {
+      // handle errors that might come back
 
+    });
+        
+    
+  }
+return false;
 }
