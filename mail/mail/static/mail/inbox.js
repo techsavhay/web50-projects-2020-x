@@ -10,17 +10,20 @@ document.addEventListener('DOMContentLoaded', function() {
   load_mailbox('inbox');
 
 
-function compose_email() {
-
-  // Show compose view and hide other views
-  document.querySelector('#emails-view').style.display = 'none';
-  document.querySelector('#compose-view').style.display = 'block';
-
-  // Clear out composition fields
-  document.querySelector('#compose-recipients').value = '';
-  document.querySelector('#compose-subject').value = '';
-  document.querySelector('#compose-body').value = '';
-}
+  function compose_email() {
+    // Show compose view and hide other views
+    document.querySelector('#emails-view').style.display = 'none';
+    document.querySelector('#compose-view').style.display = 'block';
+  
+    // Clear out composition fields
+    document.querySelector('#compose-recipients').value = '';
+    document.querySelector('#compose-subject').value = '';
+    document.querySelector('#compose-body').value = '';
+  
+    // Attach the send_email function to the form submit event
+    document.querySelector('form').onsubmit = send_email;
+  }
+  
 
 function load_mailbox(mailbox) {
   
@@ -53,6 +56,7 @@ function send_email() {
   // Listen for submission of the form on the compose page, if submit is pressed run the following code
   document.querySelector('form').onsubmit = (event) => {
     event.preventDefault();
+    console.log('Form was submitted'); 
 
     // set field name variables which will be used later as keys in key:value pairs.
     var recipients = "recipients";
@@ -82,6 +86,7 @@ function send_email() {
     .then(result => {
       // Print result
       console.log(result.message);
+      console.log('Email sent successfully'); // debug console statement
       //if no errors come back load the sent mailbox function TO BE CODED!!!
       load_mailbox('sent');
     })
@@ -98,5 +103,9 @@ function send_email() {
     });
   }
 }
+
+
+//def 
+
 
 });
