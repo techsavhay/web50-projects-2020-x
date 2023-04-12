@@ -55,13 +55,25 @@ function load_mailbox(mailbox) {
       console.log("Fetched emails:", emails);
 
       // Change the text content of title page element
-      document.querySelector('#emails-view h3').textContent = `${mailbox}`;
+      const mailboxTitle = document.querySelector('#emails-view h3');
+      if (mailboxTitle) {
+        mailboxTitle.textContent = `${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}`;
+      } else {
+        console.error('Could not find the mailbox title element');
+      }
 
       emails.forEach(email => {
         const rowElement = document.createElement('tr');
+        rowElement.classList.add('email-row');
+        
         const senderElement = document.createElement('td');
+        senderElement.classList.add('email-sender', 'email-cell'); 
+
         const subjectElement = document.createElement('td');
+        subjectElement.classList.add('email-subject', 'email-cell'); 
+
         const timestampElement = document.createElement('td');
+        timestampElement.classList.add('email-timestamp', 'email-cell'); 
 
         senderElement.innerHTML = email.sender;
         subjectElement.innerHTML = email.subject;
@@ -71,6 +83,12 @@ function load_mailbox(mailbox) {
         rowElement.appendChild(subjectElement);
         rowElement.appendChild(timestampElement);
 
+        // Add click event to the row to navigate to the email page
+        rowElement.addEventListener('click', () => {
+          window.location.href = `emails/${email.id}`;
+        });
+
+        // check if email has been read, if it hasn't make sure background is gray (in css)
         if (email.read === false) {
           rowElement.classList.add('unread-email');
         }
@@ -82,12 +100,6 @@ function load_mailbox(mailbox) {
       console.error("Error fetching emails:", error);
     });
 }
-
-
-
-
-
-
 
 
 function send_email() {
