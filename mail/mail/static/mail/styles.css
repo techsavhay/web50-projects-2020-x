@@ -1,3 +1,16 @@
 textarea {
     min-height: 400px;
 }
+
+.unread-email {
+    background-color: gray;
+}
+
+table {
+    border-collapse: collapse;
+  }
+  
+  td, th {
+    border: .5px solid black;
+    padding: 8px;
+  }

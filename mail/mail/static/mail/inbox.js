@@ -40,44 +40,53 @@ function compose_email() {
 
 
 function load_mailbox(mailbox) {
-  console.log(`load_mailbox function called with mailbox: ${mailbox}`); 
-
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#compose-view').style.display = 'none';
 
-  // Show the mailbox name
-  document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
+  // Clear out the mailbox view
+  const emailsTable = document.querySelector('#emails-view tbody');
+  emailsTable.innerHTML = '';
 
-// API request to get the emails from the relevant mailbox
-fetch(`/emails/${mailbox}`)
-  .then(response => response.json())
-  .then(emails => {
-    // Print emails
-    console.log(emails);
+  // Fetch emails for the specified mailbox
+  fetch(`/emails/${mailbox}`)
+    .then(response => response.json())
+    .then(emails => {
+      console.log("Fetched emails:", emails);
 
-    // Loop through the array of email objects
-    emails.forEach(email => {
-      // Access properties of each email object
-      const id = email.id;
-      const sender = email.sender;
-      const recipients = email.recipients;
-      const subject = email.subject;
-      const timestamp = email.timestamp;
-      const read = email.read;
-      const archived = email.archived;
+      // Change the text content of title page element
+      document.querySelector('#emails-view h3').textContent = `${mailbox}`;
 
-      //  properties, e.g., create DOM elements and display them
-      console.log(id, sender, recipients, subject, timestamp, read, archived);
+      emails.forEach(email => {
+        const rowElement = document.createElement('tr');
+        const senderElement = document.createElement('td');
+        const subjectElement = document.createElement('td');
+        const timestampElement = document.createElement('td');
+
+        senderElement.innerHTML = email.sender;
+        subjectElement.innerHTML = email.subject;
+        timestampElement.innerHTML = email.timestamp;
+
+        rowElement.appendChild(senderElement);
+        rowElement.appendChild(subjectElement);
+        rowElement.appendChild(timestampElement);
+
+        if (email.read === false) {
+          rowElement.classList.add('unread-email');
+        }
+
+        emailsTable.appendChild(rowElement);
+      });
+    })
+    .catch(error => {
+      console.error("Error fetching emails:", error);
     });
-
-    // ... do something else with emails ...
-  });
+}
 
 
 
 
-};
+
 
 
 
