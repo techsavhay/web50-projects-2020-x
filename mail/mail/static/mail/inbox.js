@@ -49,21 +49,36 @@ function load_mailbox(mailbox) {
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
 
-  // api request to get the emails from the relevent mailbox
-  fetch(`/emails/${mailbox}`)
+// API request to get the emails from the relevant mailbox
+fetch(`/emails/${mailbox}`)
   .then(response => response.json())
   .then(emails => {
     // Print emails
-    console.log(emails)
+    console.log(emails);
+
+    // Loop through the array of email objects
+    emails.forEach(email => {
+      // Access properties of each email object
+      const id = email.id;
+      const sender = email.sender;
+      const recipients = email.recipients;
+      const subject = email.subject;
+      const timestamp = email.timestamp;
+      const read = email.read;
+      const archived = email.archived;
+
+      //  properties, e.g., create DOM elements and display them
+      console.log(id, sender, recipients, subject, timestamp, read, archived);
+    });
 
     // ... do something else with emails ...
-    for (email in emails);
-    pass
+  });
 
 
 
-});
-}
+
+};
+
 
 
 function send_email() {
