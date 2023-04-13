@@ -43,6 +43,7 @@ function load_mailbox(mailbox) {
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#compose-view').style.display = 'none';
+  document.querySelector("emaildetail-view").style.display = 'none';
 
   // Clear out the mailbox view
   const emailsTable = document.querySelector('#emails-view tbody');
@@ -164,5 +165,9 @@ function send_email() {
       }
     });
   }
+}
+
+function load_email() {
+
 }
 
