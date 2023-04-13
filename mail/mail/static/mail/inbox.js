@@ -178,21 +178,46 @@ function load_email(email_id) {
     .then(email => {
       console.log("Fetched emails:", email);
 
+      // assigns a variable to each element on the page
       const subjectElement = document.querySelector('#email-subject');
       const senderElement = document.querySelector('#email-sender');
       const recipientsElement = document.querySelector('#email-recipients');
       const timestampElement = document.querySelector('#email-timestamp');
       const bodyElement = document.querySelector('#email-body');
+      const archiveElement = document.querySelector('#archive');
 
-      subjectElement.innerHTML =  email.subject;
+      //updates each element with data from the email
+      subjectElement.innerHTML = email.subject;
       senderElement.innerHTML = "Sender: " + email.sender;
-      recipientsElement.innerHTML = "Recipients " + email.recipients;
+      recipientsElement.innerHTML = "Recipients: " + email.recipients;
       timestampElement.innerHTML = email.timestamp;
       bodyElement.innerHTML = email.body;
+      archiveElement.value = email.archive;
 
       // Show the email and hide other views
       document.querySelector('#emails-view').style.display = 'none';
       document.querySelector('#compose-view').style.display = 'none';
       document.querySelector('#emaildetail-view').style.display = 'block';
+
+      // listen for changes to the archive button
+      archiveElement.addEventListener('change', (event) => {
+        if (event.target.checked) {
+          console.log('The radio button is now selected.');
+
+          fetch(`/emails/${email_id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+              archived: true,
+            }),
+          });
+        } else {
+          fetch(`/emails/${email_id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+              archived: false,
+            }),
+          });
+        }
+      });
     });
 }
