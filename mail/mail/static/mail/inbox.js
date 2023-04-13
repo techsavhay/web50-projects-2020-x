@@ -31,6 +31,8 @@ function compose_email() {
   // Show compose view and hide other views
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'block';
+  document.querySelector('#emaildetail-view').style.display = 'none';
+  
 
   // Clear out composition fields
   document.querySelector('#compose-recipients').value = '';
@@ -43,7 +45,7 @@ function load_mailbox(mailbox) {
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#compose-view').style.display = 'none';
-  document.querySelector("emaildetail-view").style.display = 'none';
+  document.querySelector('#emaildetail-view').style.display = 'none';
 
   // Clear out the mailbox view
   const emailsTable = document.querySelector('#emails-view tbody');
@@ -86,7 +88,7 @@ function load_mailbox(mailbox) {
 
         // Add click event to the row to navigate to the email page
         rowElement.addEventListener('click', () => {
-          window.location.href = `emails/${email.id}`;
+          load_email(email.id);
         });
 
         // check if email has been read, if it hasn't make sure background is gray (in css)
@@ -167,7 +169,30 @@ function send_email() {
   }
 }
 
-function load_email() {
+function load_email(email_id) {
+  console.log('load_email function called');
 
+  // Fetch specific email
+  fetch(`/emails/${email_id}`)
+    .then(response => response.json())
+    .then(email => {
+      console.log("Fetched emails:", email);
+
+      const subjectElement = document.querySelector('#email-subject');
+      const senderElement = document.querySelector('#email-sender');
+      const recipientsElement = document.querySelector('#email-recipients');
+      const timestampElement = document.querySelector('#email-timestamp');
+      const bodyElement = document.querySelector('#email-body');
+
+      subjectElement.innerHTML =  email.subject;
+      senderElement.innerHTML = "Sender: " + email.sender;
+      recipientsElement.innerHTML = "Recipients " + email.recipients;
+      timestampElement.innerHTML = email.timestamp;
+      bodyElement.innerHTML = email.body;
+
+      // Show the email and hide other views
+      document.querySelector('#emails-view').style.display = 'none';
+      document.querySelector('#compose-view').style.display = 'none';
+      document.querySelector('#emaildetail-view').style.display = 'block';
+    });
 }
-

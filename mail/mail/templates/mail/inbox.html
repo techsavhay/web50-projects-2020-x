@@ -28,20 +28,22 @@
     </div>
 
     <div id="emaildetail-view">
-        <h3>Email subject should appear here</h3> 
         <body>
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <div class="email-container">
-                <h1 class="email-subject">Subject: Your email subject here</h1>
-                <div class="email-metadata">
-                    <p class="email-sender">From: sender@example.com</p>
-                    <p class="email-recipients">To: recipient@example.com</p>
-                    <p class="email-timestamp">Date to be displayed here</p>
+                <h1 id ="email-subject"class="email-subject">Subject: Your email subject here</h1>
+                <div  class="email-metadata">
+                    <p id ="email-sender" class="email-sender">From: sender@example.com</p>
+                    <p id = "email-recipients" class="email-recipients">To: recipient@example.com</p>
+                    <p id ="email-timestamp" class="email-timestamp">Date to be displayed here</p>
                 </div>
                 <hr>
-                <div class="email-body">
-                    <p>email body to be displayed here
+                <div  class="email-body">
+                    <p id ='email-body'>email body to be displayed here
                 </div>
+                    <input type="radio" id="archive" name="mailbox" value="archive">
+                    <label for="archive">Archive</label>
+
             </div>
         </body>
     </div>
