@@ -22,30 +22,28 @@
               </tr>
             </thead>
             <tbody>
-              <!-- Table rows are mgically added here -->
+              <!-- Table rows are magically added here -->
             </tbody>
           </table>
     </div>
 
     <div id="emaildetail-view">
-        <body>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <div class="email-container">
-                <h1 id ="email-subject"class="email-subject">Subject: Your email subject here</h1>
-                <div  class="email-metadata">
-                    <p id ="email-sender" class="email-sender">From: sender@example.com</p>
-                    <p id = "email-recipients" class="email-recipients">To: recipient@example.com</p>
-                    <p id ="email-timestamp" class="email-timestamp">Date to be displayed here</p>
-                </div>
-                <hr>
-                <div  class="email-body">
-                    <p id ='email-body'>email body to be displayed here
-                </div>
-                    <input type="radio" id="archive" name="mailbox" value="archive">
-                    <label for="archive">Archive</label>
-
-            </div>
-        </body>
+        <h1 id ="email-subject" class="email-subject">Subject: Your email subject here</h1>
+        <div  class="email-metadata">
+            <p id ="email-sender" class="email-sender">From: sender@example.com</p>
+            <p id = "email-recipients" class="email-recipients">To: recipient@example.com</p>
+            <p id ="email-timestamp" class="email-timestamp">Date to be displayed here</p>
+        </div>
+        <hr>
+        <div  class="email-body">
+            <p id ='email-body'>email body to be displayed here</p>
+        </div>
+        <div id="archive">
+            <button id="archive-button" class="btn btn-sm btn-outline-primary">Archive</button>
+        </div>
+        <div id="reply">
+            <button id="reply-button" class="btn btn-sm btn-outline-primary">Reply</button>
+        </div>
     </div>
 
     <div id="compose-view">
@@ -58,7 +56,7 @@
                 To: <input id="compose-recipients" class="form-control">
             </div>
             <div class="form-group">
-                <input class="form-control" id="compose-subject" placeholder="Subject">
+                <input autocomplete="off" class="form-control" id="compose-subject" placeholder="Subject">
             </div>
             <textarea class="form-control" id="compose-body" placeholder="Body"></textarea>
             <input type="submit" class="btn btn-primary"/>

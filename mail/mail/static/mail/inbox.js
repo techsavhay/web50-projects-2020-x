@@ -1,223 +1,152 @@
-console.log("Inbox.js loaded");
-
 document.addEventListener('DOMContentLoaded', function() {
-  console.log('DOMContentLoaded event triggered'); 
 
   // Use buttons to toggle between views
   document.querySelector('#inbox').addEventListener('click', () => load_mailbox('inbox'));
   document.querySelector('#sent').addEventListener('click', () => load_mailbox('sent'));
   document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
-  document.querySelector('#compose').addEventListener('click', compose_email);
+  document.querySelector('#compose').addEventListener('click', () => compose_email('compose'));
+
+  // Add the event listener for the compose form submission
+  document.querySelector('#compose-form').addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const recipients = document.querySelector('#compose-recipients').value;
+    const subject = document.querySelector('#compose-subject').value;
+    const body = document.querySelector('#compose-body').value;
+
+    fetch('/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        recipients: recipients,
+        subject: subject,
+        body: body
+      })
+    })
+    .then(response => response.json())
+    .then(result => {
+        console.log(result);
+        load_mailbox('sent');
+    })
+    .catch(error => {
+        console.error('Error sending email:', error);
+    });
+  });
 
   // By default, load the inbox
   load_mailbox('inbox');
-
-  // Add submit event listener to the compose form
-  document.querySelector('#compose-form').addEventListener('submit', function(event) {
-    // Prevent default submission
-    event.preventDefault();
-
-    // Send email
-    send_email();
-
-    console.log('Submit event triggered');
-  });
-
 });
 
-function compose_email() {
-  console.log('compose_email function called'); 
+// compose email
+function compose_email(action, email) {
 
   // Show compose view and hide other views
   document.querySelector('#emails-view').style.display = 'none';
-  document.querySelector('#compose-view').style.display = 'block';
   document.querySelector('#emaildetail-view').style.display = 'none';
-  
+  document.querySelector('#compose-view').style.display = 'block';
 
   // Clear out composition fields
   document.querySelector('#compose-recipients').value = '';
   document.querySelector('#compose-subject').value = '';
   document.querySelector('#compose-body').value = '';
+
+  // reply action
+  if (action === 'reply') {
+    // fill out recipient and subject
+    document.querySelector('#compose-recipients').value = email.sender;
+    document.querySelector('#compose-subject').value = `Re: ${email.subject}`;
+  }
+
 }
 
-
+// load specific mailbox views
 function load_mailbox(mailbox) {
+
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#compose-view').style.display = 'none';
   document.querySelector('#emaildetail-view').style.display = 'none';
 
-  // Clear out the mailbox view
-  const emailsTable = document.querySelector('#emails-view tbody');
-  emailsTable.innerHTML = '';
+  // Show the mailbox name
+  document.querySelector('#emails-view h3').innerHTML = `${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}`;
 
-  // Fetch emails for the specified mailbox
+  // Get emails from the mailbox
   fetch(`/emails/${mailbox}`)
-    .then(response => response.json())
-    .then(emails => {
-      console.log("Fetched emails:", emails);
-
-      // Change the text content of title page element
-      const mailboxTitle = document.querySelector('#emails-view h3');
-      if (mailboxTitle) {
-        mailboxTitle.textContent = `${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}`;
-      } else {
-        console.error('Could not find the mailbox title element');
-      }
+  .then(response => response.json())
+  .then(emails => {
+      // Display emails in the table
+      const table = document.querySelector('.email-table tbody');
+      table.innerHTML = '';
 
       emails.forEach(email => {
-        const rowElement = document.createElement('tr');
-        rowElement.classList.add('email-row');
-        
-        const senderElement = document.createElement('td');
-        senderElement.classList.add('email-sender', 'email-cell'); 
+          const row = document.createElement('tr');
+          row.innerHTML = `
+              <td>${email.sender}</td>
+              <td>${email.subject}</td>
+              <td>${email.timestamp}</td>
+          `;
 
-        const subjectElement = document.createElement('td');
-        subjectElement.classList.add('email-subject', 'email-cell'); 
+          // Add event listener for the row
+          row.addEventListener('click', () => {
+              load_email(email.id);
+          });
 
-        const timestampElement = document.createElement('td');
-        timestampElement.classList.add('email-timestamp', 'email-cell'); 
+          // Apply different styles based on read status
+          if (email.read) {
+              row.style.backgroundColor = 'lightgray';
+          }
 
-        senderElement.innerHTML = email.sender;
-        subjectElement.innerHTML = email.subject;
-        timestampElement.innerHTML = email.timestamp;
-
-        rowElement.appendChild(senderElement);
-        rowElement.appendChild(subjectElement);
-        rowElement.appendChild(timestampElement);
-
-        // Add click event to the row to navigate to the email page
-        rowElement.addEventListener('click', () => {
-          load_email(email.id);
-        });
-
-        // check if email has been read, if it hasn't make sure background is gray (in css)
-        if (email.read === false) {
-          rowElement.classList.add('unread-email');
-        }
-
-        emailsTable.appendChild(rowElement);
+          // Add the row to the table
+          table.append(row);
       });
-    })
-    .catch(error => {
-      console.error("Error fetching emails:", error);
-    });
+  });
 }
 
-
-function send_email() {
-  console.log('send_email function called'); 
-
-  // Selects the submit button to be used later.
-  const submit = document.querySelector('input[type="submit"]');
-  const compose_recipients = document.querySelector('#compose-recipients');
-
-  // Disable submit button by default so it doesn't submit blank emails:
-  submit.disabled = true;
-
-  // Listen for input to be typed into the compose_recipients input field
-  compose_recipients.onkeyup = () => {
-    if (compose_recipients.value.length > 0) {
-        submit.disabled = false;
-    }
-    else {
-        submit.disabled = true;
-    }
-  }
-
-  // Remove the previous event listener and add a new one
-  document.querySelector('#compose-form').removeEventListener('submit', form_submit_handler);
-  document.querySelector('#compose-form').addEventListener('submit', form_submit_handler);
-
-  function form_submit_handler(event) {
-    console.log('Form submit handler called'); // New console log
-    event.preventDefault();
-
-    var recipients = "recipients";
-    var subject = "subject";
-    var body = "body";
-
-    var obj = {};
-    obj[recipients] = compose_recipients.value;
-    obj[subject] = document.querySelector('#compose-subject').value;
-    obj[body] = document.querySelector('#compose-body').value;
-
-    fetch('/emails', {
-      method: 'POST',
-      body: JSON.stringify(obj)
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw response;
-      }
-      return response.json();
-    })
-    .then(result => {
-      console.log(result.message);
-      console.log('Email sent successfully');
-      load_mailbox('sent');
-    })
-    .catch(error => {
-      if (error instanceof Response) {
-        error.json().then(err => {
-          console.error('Error:', err.error);
-        });
-      } else {
-        console.error('Error:', error.message);
-      }
-    });
-  }
-}
-
+// load a specific email
 function load_email(email_id) {
-  console.log('load_email function called');
+  // Show email details and hide other views
+  document.querySelector('#emails-view').style.display = 'none';
+  document.querySelector('#emaildetail-view').style.display = 'block';
+  document.querySelector('#compose-view').style.display = 'none';
+  
 
-  // Fetch specific email
+  // Get email details
   fetch(`/emails/${email_id}`)
-    .then(response => response.json())
-    .then(email => {
-      console.log("Fetched emails:", email);
+  .then(response => response.json())
+  .then(email => {
+      // Display email details
+      document.querySelector('#email-subject').innerHTML = `Subject: ${email.subject}`;
+      document.querySelector('#email-sender').innerHTML = `From: ${email.sender}`;
+      document.querySelector('#email-recipients').innerHTML = `To: ${email.recipients.join(', ')}`;
+      document.querySelector('#email-timestamp').innerHTML = email.timestamp;
+      document.querySelector('#email-body').innerHTML = email.body;
 
-      // assigns a variable to each element on the page
-      const subjectElement = document.querySelector('#email-subject');
-      const senderElement = document.querySelector('#email-sender');
-      const recipientsElement = document.querySelector('#email-recipients');
-      const timestampElement = document.querySelector('#email-timestamp');
-      const bodyElement = document.querySelector('#email-body');
-      const archiveElement = document.querySelector('#archive');
-
-      //updates each element with data from the email
-      subjectElement.innerHTML = email.subject;
-      senderElement.innerHTML = "Sender: " + email.sender;
-      recipientsElement.innerHTML = "Recipients: " + email.recipients;
-      timestampElement.innerHTML = email.timestamp;
-      bodyElement.innerHTML = email.body;
-      archiveElement.value = email.archive;
-
-      // Show the email and hide other views
-      document.querySelector('#emails-view').style.display = 'none';
-      document.querySelector('#compose-view').style.display = 'none';
-      document.querySelector('#emaildetail-view').style.display = 'block';
-
-      // listen for changes to the archive button
-      archiveElement.addEventListener('change', (event) => {
-        if (event.target.checked) {
-          console.log('The radio button is now selected.');
-
-          fetch(`/emails/${email_id}`, {
-            method: 'PUT',
-            body: JSON.stringify({
-              archived: true,
-            }),
-          });
-        } else {
-          fetch(`/emails/${email_id}`, {
-            method: 'PUT',
-            body: JSON.stringify({
-              archived: false,
-            }),
-          });
-        }
+      // Mark the email as read
+      fetch(`/emails/${email.id}`, {
+          method: 'PUT',
+          body: JSON.stringify({
+              read: true
+          })
       });
-    });
+      document.querySelector('#reply').addEventListener('click', () => compose_email('reply', email));
+
+      // Set up the archive button
+      const archiveButton = document.querySelector('#archive-button');
+      archiveButton.textContent = email.archived ? 'Unarchive' : 'Archive';
+
+      archiveButton.addEventListener('click', () => {
+          fetch(`/emails/${email.id}`, {
+              method: 'PUT',
+              body: JSON.stringify({
+                  archived: !email.archived
+              })
+          })
+          .then(() => {
+              load_mailbox('inbox');
+          });
+      });
+  });
 }
+
