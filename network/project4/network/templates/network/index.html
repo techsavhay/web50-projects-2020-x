@@ -1,11 +1,12 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
-<div id="newpost">
+<form id="newpost-form">
     
         <h5>New Post</h5>
         <br>
         <textarea id="newpost-textarea"  placeholder="Enter new post here."></textarea>
-    
-</div>
+        <br>
+        <input type="submit" class="btn btn-primary"/>
+</form>
 {% endblock %}
