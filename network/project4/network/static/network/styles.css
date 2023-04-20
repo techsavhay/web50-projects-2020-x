@@ -1,0 +1,12 @@
+#newpost-textarea {
+    width:75%;
+    height: 100px;
+    max-width: 3000px;
+    padding: 5px;
+    text-align: left;
+}
+
+#newpost {
+    height: 1vh;
+    padding: 20px;
+}
