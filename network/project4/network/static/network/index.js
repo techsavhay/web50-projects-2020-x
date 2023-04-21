@@ -56,9 +56,12 @@ function load_posts() {
             // if above is hidden this should be visible once its populated.
             const clonedTable = tableTemplate.cloneNode(true); 
     
-        
             posts.forEach(post => {
-
+                // username, likes and likes count are not in 'post' model so this needs to be looked at later
+                const username = document.querySelector(`.username`).textContent = `${post.username}`
+                const timestamp = document.querySelector(`.timestamp`).textContent = `${post.timestamp}` 
+                const content = document.querySelector(`.content`).textContent = `${post.content}`
+                const likes = document.querySelector(`.likes`).textContent = `${post.likes}`  
             })
             
         })
