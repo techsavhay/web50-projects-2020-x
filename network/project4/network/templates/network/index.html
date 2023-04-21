@@ -2,10 +2,10 @@
 
 {% block body %}
 <form id="newpost-form">
-    
+    {% csrf_token %}
         <h5>New Post</h5>
         <br>
-        <textarea id="newpost-textarea"  placeholder="Enter new post here."></textarea>
+        <textarea name="content" id="newpost-textarea"  placeholder="Enter new post here."></textarea>
         <br>
         <input type="submit" class="btn btn-primary"/>
 </form>
