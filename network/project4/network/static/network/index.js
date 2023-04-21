@@ -47,6 +47,24 @@ function load_posts() {
             timestamp: timestamp,
             likes: like_post //this probably needs to be changed.
         })
+        .then(response => response.json())
+        .then(posts => {
+            console.log(posts);
+            // Display posts in the table
+            // this may need to be hidden
+            const table = document.querySelector('.posts-table-template'); 
+            // if above is hidden this should be visible once its populated.
+            const clonedTable = tableTemplate.cloneNode(true); 
+    
+        
+            posts.forEach(post => {
+
+            })
+            
+        })
+        .catch(error => {
+            console.error('Error fetching posts:', error);
+        })
     })
 }
 

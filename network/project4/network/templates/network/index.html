@@ -12,12 +12,12 @@
 
 
 <div id="allposts-view">
-    <table class ="posts-table">
+    <table id="posts-table-template" class ="posts-table">
         <tbody>
-          <!-- Table rows are magically added here -->
+          
           <tr>
-            <td>USERNAME</td>
-            <td>TIMESTAMP</td>
+            <td class="username"></td>
+            <td class="timestamp"></td>
           </tr>
           <tr>
             <td colspan="2" rowspan="2">POST CONTENT</td>
@@ -26,8 +26,8 @@
             <!-- The second row should be occupied by the cell from the previous row -->
           </tr>
           <tr>
-            <td>LIKES</td>
-            <td>LIKES SYMBOL OR COUNT?</td>
+            <td class="likes"></td>
+            <td class="likescount"></td>
           </tr>
         </tbody>
     </table>
