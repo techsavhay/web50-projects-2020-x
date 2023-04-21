@@ -65,6 +65,7 @@ def register(request):
     
 @csrf_exempt
 def save_post(request):
+
     if request.method == 'POST':
         # Load the JSON data from request.body
         data = json.loads(request.body)
@@ -80,3 +81,8 @@ def save_post(request):
             return JsonResponse({"success": False, "error": "Content is empty."})
     else:
         return JsonResponse({"success": False, "error": "Invalid request method."})
+    
+def get_posts(request, view):
+    #filter posts based on the 'view' eg all, followed, or self.
+    if view == "followed":
+        posts = #CONTINUE HERE!!!!!!!!!!!!!!

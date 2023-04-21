@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-    function load_posts() {
+    function loadPosts() {
         fetch(`/api/posts`, {
             method: 'GET',
             headers: {
