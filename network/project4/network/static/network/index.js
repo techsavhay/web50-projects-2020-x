@@ -34,41 +34,37 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-function load_posts() {
-    fetch(`/api/posts`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            id: id,
-            content: content,
-            post_owner:post_owner,
-            timestamp: timestamp,
-            likes: like_post //this probably needs to be changed.
+    function load_posts() {
+        fetch(`/api/posts`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
         })
         .then(response => response.json())
         .then(posts => {
             console.log(posts);
-            // Display posts in the table
-            // this may need to be hidden
-            const table = document.querySelector('.posts-table-template'); 
-            // if above is hidden this should be visible once its populated.
-            const clonedTable = tableTemplate.cloneNode(true); 
     
             posts.forEach(post => {
-                // username, likes and likes count are not in 'post' model so this needs to be looked at later
-                const username = document.querySelector(`.username`).textContent = `${post.username}`
-                const timestamp = document.querySelector(`.timestamp`).textContent = `${post.timestamp}` 
-                const content = document.querySelector(`.content`).textContent = `${post.content}`
-                const likes = document.querySelector(`.likes`).textContent = `${post.likes}`  
-            })
-            
+                // Clone the table structure
+                const tableTemplate = document.querySelector('#posts-table-template');
+                const clonedTable = tableTemplate.cloneNode(true);
+                clonedTable.style.display = ''; // Make the cloned table visible
+    
+                // Update the content of the cloned table. some of these variables are not from post model.
+                clonedTable.querySelector('.username').textContent = `${post.username}`;
+                clonedTable.querySelector('.timestamp').textContent = `${post.timestamp}`;
+                clonedTable.querySelector('.content').textContent = `${post.content}`;
+                clonedTable.querySelector('.likes').textContent = `${post.likes}`;
+                
+                // Append the populated cloned table to the container
+                document.querySelector("#allposts-view").appendChild(clonedTable);
+            });
         })
         .catch(error => {
             console.error('Error fetching posts:', error);
-        })
-    })
-}
+        });
+    }
+    
 
 });
