@@ -24,3 +24,16 @@
     padding: 20px;
     padding-left: 300px;
 }
+
+#like-button {
+    background-color: white;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+  }
+  
+  #like-button.liked-button {
+    background-color: red;
+  }
+  
