@@ -7,6 +7,8 @@ from django.contrib.auth.models import UserManager
 from .models import User, Post, Like
 from django.views.decorators.csrf import csrf_exempt
 import json
+from django.core.paginator import Paginator
+from django.db.models import Count
 
 def index(request):
     return render(request, "network/index.html")
@@ -82,7 +84,43 @@ def save_post(request):
     else:
         return JsonResponse({"success": False, "error": "Invalid request method."})
     
-def get_posts(request, view):
-    #filter posts based on the 'view' eg all, followed, or self.
+def get_posts(request, view, page_number=1):
+    # Add current user to variable
+    current_user = request.user
+
+    # Initialize filtered_posts with an empty queryset
+    filtered_posts = Post.objects.none()
+
+    # Filter posts based on the 'view' eg all, followed, or self.
     if view == "followed":
-        posts = #CONTINUE HERE!!!!!!!!!!!!!!
+        # Get all the users that the current user is following
+        following_users = current_user.following.all()
+
+        # Filter the posts by checking if the post_owner is in the list of following users
+        filtered_posts = Post.objects.filter(post_owner__in=following_users)
+
+    elif view == "myposts":
+        # search posts for users own posts.
+        filtered_posts = Post.objects.filter(post_owner=current_user)
+
+    elif view == "allposts":
+        filtered_posts = Post.objects.all()
+
+    # Order the queryset by timestamp and annotate the queryset with the number of likes
+    filtered_posts = filtered_posts.annotate(likes_count=Count('like')).order_by('-timestamp')
+
+    # Convert the queryset to a list of dictionaries
+    filtered_posts = filtered_posts.values('id', 'content', 'post_owner__username', 'timestamp', 'likes_count')
+
+    # Use Django's Paginator to paginate the results
+    paginator = Paginator(filtered_posts, 10)
+    page = paginator.get_page(page_number)
+
+    # Return a JSON response
+    return JsonResponse({
+        'posts': list(page),
+        'has_next': page.has_next(),
+        'has_previous': page.has_previous(),
+        'next_page_number': page.next_page_number() if page.has_next() else None,
+        'previous_page_number': page.previous_page_number() if page.has_previous() else None,
+    })
