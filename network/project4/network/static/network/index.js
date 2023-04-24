@@ -34,37 +34,76 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-    function loadPosts() {
-        fetch(`/api/posts`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        })
-        .then(response => response.json())
-        .then(posts => {
-            console.log(posts);
+    function loadPosts(view, page_number) {
+        const url = `/api/posts/${view}/${page_number}/`;
     
-            posts.forEach(post => {
-                // Clone the table structure
-                const tableTemplate = document.querySelector('#posts-table-template');
-                const clonedTable = tableTemplate.cloneNode(true);
-                clonedTable.style.display = ''; // Make the cloned table visible
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                // Clear the existing posts in the DOM
+                const postsContainer = document.querySelector("#posts-container");
+                postsContainer.innerHTML = '';
     
-                // Update the content of the cloned table. some of these variables are not from post model.
-                clonedTable.querySelector('.username').textContent = `${post.username}`;
-                clonedTable.querySelector('.timestamp').textContent = `${post.timestamp}`;
-                clonedTable.querySelector('.content').textContent = `${post.content}`;
-                clonedTable.querySelector('.likes').textContent = `${post.likes}`;
-                
-                // Append the populated cloned table to the container
-                document.querySelector("#allposts-view").appendChild(clonedTable);
+                // Render the received posts
+                data.posts.forEach(post => {
+                    // Create the post element (e.g., a div or a list item)
+                    const postElement = document.createElement("div");
+                    postElement.classList.add("post");
+    
+                    // Populate the post element with the post data (id, content, post_owner__username, timestamp, etc.)
+                    // You can customize this part to display the post information as you like
+                    postElement.innerHTML = `
+                        <h3>${post.post_owner__username}</h3>
+                        <p>${post.content}</p>
+                        <small>${post.timestamp}</small>
+                    `;
+    
+                    // Append the post element to the posts container
+                    postsContainer.appendChild(postElement);
+                });
+    
+                // Update the pagination controls (e.g., next and previous buttons)
+                const prevButton = document.querySelector("#previous-button");
+                const nextButton = document.querySelector("#next-button");
+    
+                if (data.has_previous) {
+                    prevButton.disabled = false;
+                    prevButton.dataset.page = data.previous_page_number;
+                } else {
+                    prevButton.disabled = true;
+                }
+    
+                if (data.has_next) {
+                    nextButton.disabled = false;
+                    nextButton.dataset.page = data.next_page_number;
+                } else {
+                    nextButton.disabled = true;
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching posts:", error);
             });
-        })
-        .catch(error => {
-            console.error('Error fetching posts:', error);
-        });
     }
+    
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelector("#allposts-link").addEventListener("click", (event) => {
+            event.preventDefault();
+            loadPosts("allposts", 1);
+        });
+    
+        document.querySelector("#myposts-link").addEventListener("click", (event) => {
+            event.preventDefault();
+            loadPosts("myposts", 1);
+        });
+    
+        document.querySelector("#followed-link").addEventListener("click", (event) => {
+            event.preventDefault();
+            loadPosts("followed", 1);
+        });
+    
+        // Load the initial set of posts when the page loads
+        loadPosts("allposts", 1);
+    });
     
 
 });
