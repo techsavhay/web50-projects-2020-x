@@ -49,13 +49,17 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Create the post element (e.g., a div or a list item)
                     const postElement = document.createElement("div");
                     postElement.classList.add("post");
-    
+                    
+                    // for error checking
+                    console.log("First name:", post.post_owner__first_name);
+                    console.log("Last name:", post.post_owner__last_name);
+
                     // Populate the post element with the post data (id, content, post_owner__username, timestamp, etc.)
-                    // You can customize this part to display the post information as you like
+                    
                     postElement.innerHTML = `
-                        <h3>${post.post_owner__username}</h3>
+                    <h5>${post.post_owner__first_name} ${post.post_owner__last_name} @${post.post_owner__username}</h5>
                         <p>${post.content}</p>
-                        <small>${post.timestamp}</small>
+                        <small>${new Date(post.timestamp).toLocaleString()}</small>
                     `;
     
                     // Append the post element to the posts container
@@ -84,26 +88,24 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error("Error fetching posts:", error);
             });
     }
-    
-    document.addEventListener("DOMContentLoaded", () => {
-        document.querySelector("#allposts-link").addEventListener("click", (event) => {
-            event.preventDefault();
-            loadPosts("allposts", 1);
-        });
-    
-        document.querySelector("#myposts-link").addEventListener("click", (event) => {
-            event.preventDefault();
-            loadPosts("myposts", 1);
-        });
-    
-        document.querySelector("#followed-link").addEventListener("click", (event) => {
-            event.preventDefault();
-            loadPosts("followed", 1);
-        });
-    
-        // Load the initial set of posts when the page loads
+
+    // Remove the outer DOMContentLoaded event listener
+    // Keep the inner DOMContentLoaded event listener
+    document.querySelector("#allposts-link").addEventListener("click", (event) => {
+        event.preventDefault();
         loadPosts("allposts", 1);
     });
-    
 
+    document.querySelector("#myposts-link").addEventListener("click", (event) => {
+        event.preventDefault();
+        loadPosts("myposts", 1);
+    });
+
+    document.querySelector("#followed-link").addEventListener("click", (event) => {
+        event.preventDefault();
+        loadPosts("followed", 1);
+    });
+
+    // Load the initial set of posts when the page loads
+    loadPosts("allposts", 1);
 });

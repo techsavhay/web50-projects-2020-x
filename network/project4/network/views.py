@@ -110,7 +110,7 @@ def get_posts(request, view, page_number=1):
     filtered_posts = filtered_posts.annotate(likes_count=Count('like')).order_by('-timestamp')
 
     # Convert the queryset to a list of dictionaries
-    filtered_posts = filtered_posts.values('id', 'content', 'post_owner__username', 'timestamp', 'likes_count')
+    filtered_posts = filtered_posts.values('id', 'content', 'post_owner__username', 'post_owner__first_name', 'post_owner__last_name','timestamp', 'likes_count')
 
     # Use Django's Paginator to paginate the results
     paginator = Paginator(filtered_posts, 10)
