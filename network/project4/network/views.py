@@ -10,6 +10,7 @@ import json
 from django.core.paginator import Paginator
 from django.db.models import Count
 from django.http import HttpResponseNotFound
+from django.contrib.auth.decorators import login_required
 
 def index(request):
     return render(request, "network/index.html")
@@ -66,6 +67,7 @@ def register(request):
     else:
         return render(request, "network/register.html")
     
+@login_required
 @csrf_exempt
 def save_post(request):
 
@@ -110,41 +112,60 @@ def get_posts(request, view, page_number=1):
     # Order the queryset by timestamp and annotate the queryset with the number of likes
     filtered_posts = filtered_posts.annotate(likes_count=Count('like')).order_by('-timestamp')
 
-    # Convert the queryset to a list of dictionaries
-    filtered_posts = filtered_posts.values('id', 'content', 'post_owner__username', 'post_owner__first_name', 'post_owner__last_name','timestamp', 'likes_count')
-
     # Use Django's Paginator to paginate the results
     paginator = Paginator(filtered_posts, 10)
     page = paginator.get_page(page_number)
 
+    # Convert the queryset to a list of dictionaries
+    post_data = list(page.object_list.values('id', 'content', 'post_owner__username', 'post_owner__first_name', 'post_owner__last_name', 'timestamp', 'likes_count'))
+
+    # Add information about whether the current user has liked each post or not
+    for post in post_data:
+        post['liked_by_current_user'] = Like.objects.filter(like_user_id=current_user.id, like_post_id=post['id']).exists()
+
+
     # Return a JSON response
     return JsonResponse({
-        'posts': list(page),
+        'posts': post_data,
         'has_next': page.has_next(),
         'has_previous': page.has_previous(),
         'next_page_number': page.next_page_number() if page.has_next() else None,
         'previous_page_number': page.previous_page_number() if page.has_previous() else None,
     })
 
+
+@csrf_exempt
+@login_required
+@csrf_exempt
+@login_required
 def save_like(request, post_id):
     # Add current user to variable
     current_user = request.user
 
-        # Get the specific post using the provided post_id
+    # Get the specific post using the provided post_id
     try:
         post_instance = Post.objects.get(id=post_id)
     except Post.DoesNotExist:
         return HttpResponseNotFound("The requested post does not exist.")
-    
-    #get the specific post and perform action if it has been liked by the user
-    if Like.objects.filter(user_id = current_user.id, post_id = post_id):
-        #delete the like instance.
-        like_instance = Like.objects.get(user_id=current_user.id, post_id=post_id)
-        like_instance.delete()
 
-    else: #save the new like
-        new_like = Like(user=current_user, post=post_instance)
+    # Check if the user has already liked this post
+    try:
+        like_instance = Like.objects.get(like_user=current_user, like_post=post_instance)
+        like_instance.delete()  # If so, delete the like
+        response_data = {
+            'success': True,
+            'message': 'Operation delete like completed successfully'
+        }
+        return JsonResponse(response_data)
+    except Like.DoesNotExist:
+        # If the user hasn't already liked this post, create a new Like object and save it
+        new_like = Like(like_user=current_user, like_post=post_instance)
         new_like.save()
+        response_data = {
+            'success': True,
+            'message': 'Operation save like completed successfully'
+        }
+        return JsonResponse(response_data)
 
     
 

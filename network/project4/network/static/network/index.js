@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function loadPosts(view, page_number) {
         const url = `/api/posts/${view}/${page_number}/`;
+        const csrfToken = document.getElementsByName("csrfmiddlewaretoken")[0].value;
     
         fetch(url)
             .then(response => response.json())
@@ -52,18 +53,45 @@ document.addEventListener('DOMContentLoaded', function () {
     
                     // Populate the post element with the post data (id, content, post_owner__username, timestamp, etc.)
                     postElement.innerHTML = `
-                    <h5>${post.post_owner__first_name} ${post.post_owner__last_name} @${post.post_owner__username}</h5>
-                        <p>${post.content}</p>
-                        <small>${new Date(post.timestamp).toLocaleString()} </small> <button class="like-button">&#128077;</button> <span>${post.likes_count}</span>
-                    `;
+    <h5>${post.post_owner__first_name} ${post.post_owner__last_name} @${post.post_owner__username}</h5>
+    <p>${post.content}</p>
+    <small>${new Date(post.timestamp).toLocaleString()} </small> <button class="like-button ${post.liked_by_current_user ? 'liked-button' : ''}">&#128077;</button> <span>${post.likes_count}</span>
+`;
+
     
                     // Fetch like button using the class instead of an id
                     const likeButton = postElement.querySelector('.like-button');
-    
+                    
                     // Add the event listener to the like button
                     likeButton.addEventListener('click', () => {
-                        fetch(``)
-                        likeButton.classList.toggle('liked-button');
+                        fetch(`/api/likes/${post.id}/`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': csrfToken // Must include the CSRF token in the headers
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Update the like button's CSS class based on the message
+                                if (data.message === 'Operation save like completed successfully') {
+                                    likeButton.classList.add('liked-button');
+                                } else if (data.message === 'Operation delete like completed successfully') {
+                                    likeButton.classList.remove('liked-button');
+                                }
+                                
+                                // Update the like count displayed next to the button
+                                const likeCountSpan = postElement.querySelector('span');
+                                const currentLikeCount = parseInt(likeCountSpan.textContent, 10);
+                                likeCountSpan.textContent = currentLikeCount + (data.message === 'Operation save like completed successfully' ? 1 : -1);
+                            } else {
+                                console.error('Error:', data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching data:', error);
+                        });
                     });
     
                     // Append the post element to the posts container
@@ -93,7 +121,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
     
-
 
 
     // Keep the inner DOMContentLoaded event listener
