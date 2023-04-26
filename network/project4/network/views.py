@@ -9,6 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from django.core.paginator import Paginator
 from django.db.models import Count
+from django.http import HttpResponseNotFound
 
 def index(request):
     return render(request, "network/index.html")
@@ -124,6 +125,28 @@ def get_posts(request, view, page_number=1):
         'next_page_number': page.next_page_number() if page.has_next() else None,
         'previous_page_number': page.previous_page_number() if page.has_previous() else None,
     })
+
+def save_like(request, post_id):
+    # Add current user to variable
+    current_user = request.user
+
+        # Get the specific post using the provided post_id
+    try:
+        post_instance = Post.objects.get(id=post_id)
+    except Post.DoesNotExist:
+        return HttpResponseNotFound("The requested post does not exist.")
+    
+    #get the specific post and perform action if it has been liked by the user
+    if Like.objects.filter(user_id = current_user.id, post_id = post_id):
+        #delete the like instance.
+        like_instance = Like.objects.get(user_id=current_user.id, post_id=post_id)
+        like_instance.delete()
+
+    else: #save the new like
+        new_like = Like(user=current_user, post=post_instance)
+        new_like.save()
+
+    
 
 
 
