@@ -49,19 +49,22 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Create the post element (e.g., a div or a list item)
                     const postElement = document.createElement("div");
                     postElement.classList.add("post");
-                    
-                    // for error checking
-                    console.log("First name:", post.post_owner__first_name);
-                    console.log("Last name:", post.post_owner__last_name);
-
+    
                     // Populate the post element with the post data (id, content, post_owner__username, timestamp, etc.)
-                    
                     postElement.innerHTML = `
                     <h5>${post.post_owner__first_name} ${post.post_owner__last_name} @${post.post_owner__username}</h5>
                         <p>${post.content}</p>
-                        <small>${new Date(post.timestamp).toLocaleString()} </small> <button class="like-button">&#128077;</button>
-
+                        <small>${new Date(post.timestamp).toLocaleString()} </small> <button class="like-button">&#128077;</button> <span>${post.likes_count}</span>
                     `;
+    
+                    // Fetch like button using the class instead of an id
+                    const likeButton = postElement.querySelector('.like-button');
+    
+                    // Add the event listener to the like button
+                    likeButton.addEventListener('click', () => {
+                        fetch(``)
+                        likeButton.classList.toggle('liked-button');
+                    });
     
                     // Append the post element to the posts container
                     postsContainer.appendChild(postElement);
@@ -89,13 +92,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error("Error fetching posts:", error);
             });
     }
+    
 
-    // like button listerners etc
-    const likeButton = document.querySelector('#like-button');
 
-    likeButton.addEventListener('click', () => {
-    likeButton.classList.toggle('liked-button');
-});
 
     // Keep the inner DOMContentLoaded event listener
     document.querySelector("#allposts-link").addEventListener("click", (event) => {

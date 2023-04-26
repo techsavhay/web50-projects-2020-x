@@ -124,3 +124,6 @@ def get_posts(request, view, page_number=1):
         'next_page_number': page.next_page_number() if page.has_next() else None,
         'previous_page_number': page.previous_page_number() if page.has_previous() else None,
     })
+
+
+
