@@ -34,8 +34,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-    function loadPosts(view, page_number) {
-        const url = `/api/posts/${view}/${page_number}/`;
+    function loadPosts(view, page_number, username ="") {
+        let url = `/api/posts/${view}/${page_number}/`;
+    if (username) {
+        url += `${username}/`;
+    }
         const csrfToken = document.getElementsByName("csrfmiddlewaretoken")[0].value;
     
         fetch(url)
@@ -51,12 +54,17 @@ document.addEventListener('DOMContentLoaded', function () {
                     const postElement = document.createElement("div");
                     postElement.classList.add("post");
     
-                    // Populate the post element with the post data (id, content, post_owner__username, timestamp, etc.)
-                    postElement.innerHTML = `
-    <h5>${post.post_owner__first_name} ${post.post_owner__last_name} @${post.post_owner__username}</h5>
+                  // Generate the URL for the myposts view with page_number=1
+                  const mypostsUrl = url;
+
+// Populate the post element with the post data (id, content, post_owner__username, timestamp, etc.)
+postElement.innerHTML = `
+<h5>${post.post_owner__first_name} ${post.post_owner__last_name} <a href="#" onclick="loadPosts('userposts', 1, '${post.post_owner__username}'); return false;">@${post.post_owner__username}</a></h5>
     <p>${post.content}</p>
     <small>${new Date(post.timestamp).toLocaleString()} </small> <button class="like-button ${post.liked_by_current_user ? 'liked-button' : ''}">&#128077;</button> <span>${post.likes_count}</span>
 `;
+
+
 
     
                     // Fetch like button using the class instead of an id
@@ -126,19 +134,20 @@ document.addEventListener('DOMContentLoaded', function () {
     // Keep the inner DOMContentLoaded event listener
     document.querySelector("#allposts-link").addEventListener("click", (event) => {
         event.preventDefault();
-        loadPosts("allposts", 1);
+        loadPosts("allposts", 1, "");
     });
 
-    document.querySelector("#myposts-link").addEventListener("click", (event) => {
+    document.querySelector(".myposts-link").addEventListener("click", (event) => {
         event.preventDefault();
-        loadPosts("myposts", 1);
+        const url = event.target.getAttribute("data-url");
+        loadPosts("userposts", 1, "");
     });
 
     document.querySelector("#followed-link").addEventListener("click", (event) => {
         event.preventDefault();
-        loadPosts("followed", 1);
+        loadPosts("followed", 1, "");
     });
 
     // Load the initial set of posts when the page loads
-    loadPosts("allposts", 1);
+    loadPosts("allposts",  1, "");
 });

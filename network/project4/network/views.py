@@ -87,7 +87,7 @@ def save_post(request):
     else:
         return JsonResponse({"success": False, "error": "Invalid request method."})
     
-def get_posts(request, view, page_number=1):
+def get_posts(request, view,  page_number=1, username=None):
     # Add current user to variable
     current_user = request.user
 
@@ -108,6 +108,15 @@ def get_posts(request, view, page_number=1):
 
     elif view == "allposts":
         filtered_posts = Post.objects.all()
+    
+    elif view == "userposts":
+        if username:
+            # Search posts for the specified user's posts.
+            user_instance = User.objects.get(username=username)
+            filtered_posts = Post.objects.filter(post_owner=user_instance)
+        else:
+            # Search posts for the current user's own posts.
+            filtered_posts = Post.objects.filter(post_owner=current_user)
 
     # Order the queryset by timestamp and annotate the queryset with the number of likes
     filtered_posts = filtered_posts.annotate(likes_count=Count('like')).order_by('-timestamp')
@@ -123,7 +132,6 @@ def get_posts(request, view, page_number=1):
     for post in post_data:
         post['liked_by_current_user'] = Like.objects.filter(like_user_id=current_user.id, like_post_id=post['id']).exists()
 
-
     # Return a JSON response
     return JsonResponse({
         'posts': post_data,
@@ -134,8 +142,7 @@ def get_posts(request, view, page_number=1):
     })
 
 
-@csrf_exempt
-@login_required
+
 @csrf_exempt
 @login_required
 def save_like(request, post_id):
@@ -167,7 +174,7 @@ def save_like(request, post_id):
         }
         return JsonResponse(response_data)
 
-    
+
 
 
 
