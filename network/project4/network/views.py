@@ -87,12 +87,16 @@ def save_post(request):
     else:
         return JsonResponse({"success": False, "error": "Invalid request method."})
     
-def get_posts(request, view,  page_number=1, username=None):
+def get_posts(request, view, page_number=1, username=None):
     # Add current user to variable
     current_user = request.user
 
     # Initialize filtered_posts with an empty queryset
     filtered_posts = Post.objects.none()
+
+    # Initialize followers_count and following_count with default values
+    followers_count = 0
+    following_count = 0
 
     # Filter posts based on the 'view' eg all, followed, or self.
     if view == "followed":
@@ -108,15 +112,16 @@ def get_posts(request, view,  page_number=1, username=None):
 
     elif view == "allposts":
         filtered_posts = Post.objects.all()
-    
+
     elif view == "userposts":
-        if username:
-            # Search posts for the specified user's posts.
-            user_instance = User.objects.get(username=username)
-            filtered_posts = Post.objects.filter(post_owner=user_instance)
-        else:
-            # Search posts for the current user's own posts.
-            filtered_posts = Post.objects.filter(post_owner=current_user)
+         if username:
+            try:
+                # Get user instance and calculate the number of followers and the number of users they are following
+                user_instance = User.objects.get(username=username)
+                followers_count = User.objects.filter(following_users=user_instance).count()
+                following_count = user_instance.following.count()
+            except User.DoesNotExist:
+                return JsonResponse({"success": False, "error": "User not found."})
 
     # Order the queryset by timestamp and annotate the queryset with the number of likes
     filtered_posts = filtered_posts.annotate(likes_count=Count('like')).order_by('-timestamp')
@@ -133,13 +138,20 @@ def get_posts(request, view,  page_number=1, username=None):
         post['liked_by_current_user'] = Like.objects.filter(like_user_id=current_user.id, like_post_id=post['id']).exists()
 
     # Return a JSON response
-    return JsonResponse({
+    response_data = {
         'posts': post_data,
         'has_next': page.has_next(),
         'has_previous': page.has_previous(),
         'next_page_number': page.next_page_number() if page.has_next() else None,
         'previous_page_number': page.previous_page_number() if page.has_previous() else None,
-    })
+    }
+
+    # Include followers and following counts if the view is "userposts"
+    if view == "userposts" and username:
+        response_data['followers_count'] = followers_count
+        response_data['following_count'] = following_count
+
+    return JsonResponse(response_data)
 
 
 
