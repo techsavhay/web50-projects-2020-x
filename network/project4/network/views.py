@@ -120,6 +120,10 @@ def get_posts(request, view, page_number=1, username=None):
                 user_instance = User.objects.get(username=username)
                 followers_count = User.objects.filter(following_users=user_instance).count()
                 following_count = user_instance.following.count()
+
+                # Filter the posts by the specified user
+                filtered_posts = Post.objects.filter(post_owner=user_instance)
+                
             except User.DoesNotExist:
                 return JsonResponse({"success": False, "error": "User not found."})
 

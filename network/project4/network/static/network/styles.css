@@ -25,6 +25,11 @@
     padding-left: 300px;
 }
 
+#userposts-view {
+        padding: 20px;
+        padding-left: 300px;
+}
+
 .like-button {
     background-color: white;
     color: white;
