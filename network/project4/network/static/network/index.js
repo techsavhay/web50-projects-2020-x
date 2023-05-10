@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     });
 
-    function addEventListeners(postElement) {
+    function addEventListeners(postElement, post, csrfToken) {
         // Add the event listener for the user-link click
         const userLink = postElement.querySelector('.user-link');
         userLink.addEventListener('click', (event) => {
@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function loadPosts(view, page_number, username ="") {
+    function loadPosts(view, page_number, username = "") {
         let url = `/api/posts/${view}/${page_number}/`;
         if (username) {
             url += `${username}/`;
@@ -99,27 +99,27 @@ document.addEventListener('DOMContentLoaded', function () {
                     const postElement = document.createElement("div");
                     postElement.classList.add("post");
     
-                    postElement.innerHTML = `
+                                        postElement.innerHTML = `
                         <h5>${post.post_owner__first_name} ${post.post_owner__last_name} <a href="#" class="user-link" data-username="${post.post_owner__username}">@${post.post_owner__username}</a></h5>
                         <p>${post.content}</p>
                         <small>${new Date(post.timestamp).toLocaleString()} </small> <button class="like-button ${post.liked_by_current_user ? 'liked-button' : ''}">&#128077;</button> <span>${post.likes_count}</span>
                     `;
-    
-                    addEventListeners(postElement);
-    
+
+                    addEventListeners(postElement, post, csrfToken);
+
                     postsContainer.append(postElement);
                 });
-    
+
                 // Handle pagination
                 document.querySelector('#previous-button').disabled = data.pagination.previous === null;
                 document.querySelector('#next-button').disabled = data.pagination.next === null;
-    
+
                 if (!document.querySelector('#previous-button').disabled) {
                     document.querySelector('#previous-button').onclick = () => {
                         loadPosts(view, data.pagination.previous, username);
                     };
                 }
-    
+
                 if (!document.querySelector('#next-button').disabled) {
                     document.querySelector('#next-button').onclick = () => {
                         loadPosts(view, data.pagination.next, username);
@@ -127,7 +127,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
     }
-    
 
     // Load the all posts view by default
     loadPosts('allposts', 1);
