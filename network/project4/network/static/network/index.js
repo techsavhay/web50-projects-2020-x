@@ -132,4 +132,3 @@ document.addEventListener('DOMContentLoaded', function () {
     // Load the all posts view by default
     loadPosts('allposts', 1);
 });
-
