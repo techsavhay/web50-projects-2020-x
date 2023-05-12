@@ -30,6 +30,30 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     });
 
+
+    // Add event listener for the follow unfollow button
+    document.querySelector("#follow-button").addEventListener("click", () => {
+        // Get the username of the user whose profile page is currently being viewed
+        const username = document.querySelector("#username").textContent;
+    
+        // Send a POST request to the server to update the current user's following list
+        fetch(`/api/follow/${username}`, {
+            method: "POST",
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Update the 'Follow' or 'Unfollow' button and the followers count based on the server's response
+            if (data.followed) {
+                document.querySelector("#follow-button").textContent = "Unfollow";
+            } else {
+                document.querySelector("#follow-button").textContent = "Follow";
+            }
+            document.querySelector("#followers-count").textContent = `Followers: ${data.followers_count}`;
+            
+        });
+    });
+    
+
     function addEventListeners(postElement, post, csrfToken) {
         // Add the event listener for the user-link click
         const userLink = postElement.querySelector('.user-link');
@@ -81,6 +105,9 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch(url)
             .then(response => response.json())
             .then(data => {
+                // user is following code
+                const current_user_is_following = data.current_user_is_following;
+
                 // Hide all views
                 document.querySelector("#allposts-view").style.display = 'none';
                 document.querySelector("#userposts-view").style.display = 'none';
@@ -94,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 else if (view === 'userposts') {
                     document.querySelector("#userposts-view").style.display = 'block';
                     
-                        // Display the user's first name
+                        // Display the user's first name last name and followers / following counts
                         const userNameElement = document.createElement("h2");
                         userNameElement.textContent = `${data.posts[0].post_owner__first_name} ${data.posts[0].post_owner__last_name}'s Profile`;
                         document.querySelector("#userposts-view").prepend(userNameElement);
@@ -124,8 +151,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
 
                 // Handle pagination
-                document.querySelector('#previous-button').disabled = data.pagination.previous === null;
-                document.querySelector('#next-button').disabled = data.pagination.next === null;
+                document.querySelector('#previous-button').disabled = data.previous_page_number === null;
+                document.querySelector('#next-button').disabled = data.next_page_number === null;
+
 
                 if (!document.querySelector('#previous-button').disabled) {
                     document.querySelector('#previous-button').onclick = () => {

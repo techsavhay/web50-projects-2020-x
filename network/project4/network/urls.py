@@ -11,4 +11,5 @@ urlpatterns = [
     path("api/save_post", views.save_post, name='save_post'),
     re_path(r'api/posts/(?P<view>[a-z]+)/(?P<page_number>\d+)/?((?P<username>[\w@.+-]+)/)?$', views.get_posts, name='get_posts'),
     path("api/likes/<int:post_id>/", views.save_like, name="save_like"),
+    path("api/follow/<str:username>", views.follow, name="follow"),
 ]

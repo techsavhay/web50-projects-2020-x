@@ -99,6 +99,13 @@ def get_posts(request, view, page_number=1, username=None):
     followers_count = 0
     following_count = 0
 
+    # initialises and sets up if the user is followed by another user
+    is_followed = False
+    if username is not None:
+        user_instance = User.objects.get(username=username)
+        if request.user.is_authenticated:
+            is_followed = user_instance.is_followed_by(request.user)
+
     # Filter posts based on the 'view' eg all, followed, or self.
     if view == "followed":
         # Get all the users that the current user is following
@@ -149,6 +156,7 @@ def get_posts(request, view, page_number=1, username=None):
         'has_previous': page.has_previous(),
         'next_page_number': page.next_page_number() if page.has_next() else None,
         'previous_page_number': page.previous_page_number() if page.has_previous() else None,
+        'current_user_is_following': is_followed,
     }
 
     # Include followers and following counts if the view is "userposts"
@@ -191,6 +199,34 @@ def save_like(request, post_id):
         }
         return JsonResponse(response_data)
 
+
+
+@csrf_exempt
+@login_required
+def follow(request, username):
+    # Try to get the user instance for the given username
+    try:
+        user_instance = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return JsonResponse({"success": False, "error": "User not found."})
+
+    # Check if the current user is already following this user
+    if request.user.following.filter(username=username).exists():
+        # If so, unfollow the user
+        request.user.following.remove(user_instance)
+        followed = False
+    else:
+        # Otherwise, follow the user
+        request.user.following.add(user_instance)
+        followed = True
+
+    # Calculate the new followers count
+    followers_count = user_instance.following_users.count()
+
+    return JsonResponse({
+        "followed": followed,
+        "followers_count": followers_count,
+    })
 
 
 
