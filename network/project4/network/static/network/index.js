@@ -90,6 +90,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     document.querySelector("#allposts-view").style.display = 'block';
                 } else if (view === 'userposts') {
                     document.querySelector("#userposts-view").style.display = 'block';
+                    
+                        // Display the user's first name
+                        const userNameElement = document.createElement("h2");
+                        userNameElement.textContent = `${data.posts[0].post_owner__first_name} ${data.posts[0].post_owner__last_name}'s Profile`;
+                        document.querySelector("#userposts-view").prepend(userNameElement);
+                    
                 }
     
                 const postsContainer = view === 'allposts' ? document.querySelector("#posts-container") : document.querySelector("#userposts-container");

@@ -119,7 +119,7 @@ def get_posts(request, view, page_number=1, username=None):
             try:
                 # Get user instance and calculate the number of followers and the number of users they are following
                 user_instance = User.objects.get(username=username)
-                followers_count = user_instance.following_users.count()
+                followers_count = user_instance.following_users.count() # type: ignore
                 following_count = user_instance.following.count()
 
                 # Filter the posts by the specified user
