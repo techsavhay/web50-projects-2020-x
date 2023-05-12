@@ -1,3 +1,6 @@
+// Declare Username of profile being viewed variable at a higher scope
+let currentUsername = '';
+
 document.addEventListener('DOMContentLoaded', function () {
 
     // Add event listener for the newpost form submission
@@ -33,8 +36,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Add event listener for the follow unfollow button
     document.querySelector("#follow-button").addEventListener("click", () => {
-        // Get the username of the user whose profile page is currently being viewed
-        const username = document.querySelector("#follow-button").getAttribute('data-username');
+        // Get the username of the user whose profile page is currently being viewed (taken from code later on)
+        const username = currentUsername;
+
     
         // Send a POST request to the server to update the current user's following list
         fetch(`/api/follow/${username}`, {
@@ -105,6 +109,11 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch(url)
             .then(response => response.json())
             .then(data => {
+                //assign the username of the profile being viewed to the higher scoped variable
+                if (data.posts.length > 0) {
+                    currentUsername = data.posts[0].post_owner__username;
+                }
+
                 // user is following code
                 const current_user_is_following = data.current_user_is_following;
 
