@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Add event listener for the follow unfollow button
     document.querySelector("#follow-button").addEventListener("click", () => {
         // Get the username of the user whose profile page is currently being viewed
-        const username = document.querySelector("#username").textContent;
+        const username = document.querySelector("#follow-button").getAttribute('data-username');
     
         // Send a POST request to the server to update the current user's following list
         fetch(`/api/follow/${username}`, {
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 document.querySelector("#follow-button").textContent = "Follow";
             }
-            document.querySelector("#followers-count").textContent = `Followers: ${data.followers_count}`;
+            document.querySelector("#followers-count").textContent = `Followers: ${data.followers_count}, Following: ${data.following_count}`;
             
         });
     });
@@ -127,6 +127,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         document.querySelector("#userposts-view").prepend(userNameElement);
 
                         const followElement = document.createElement("p");
+                        followElement.id = "followers-count";  
                         followElement.textContent = `Followers: ${data.followers_count}, Following: ${data.following_count}`;
                         document.querySelector("#userposts-view").prepend(followElement);
                     
