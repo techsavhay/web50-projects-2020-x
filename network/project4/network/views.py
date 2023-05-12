@@ -87,6 +87,7 @@ def save_post(request):
     else:
         return JsonResponse({"success": False, "error": "Invalid request method."})
     
+@login_required
 def get_posts(request, view, page_number=1, username=None):
     # Add current user to variable
     current_user = request.user
@@ -118,7 +119,7 @@ def get_posts(request, view, page_number=1, username=None):
             try:
                 # Get user instance and calculate the number of followers and the number of users they are following
                 user_instance = User.objects.get(username=username)
-                followers_count = User.objects.filter(following_users=user_instance).count()
+                followers_count = user_instance.following_users.count()
                 following_count = user_instance.following.count()
 
                 # Filter the posts by the specified user

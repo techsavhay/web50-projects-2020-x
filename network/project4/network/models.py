@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 
 
 class User(AbstractUser):
-    following = models.ManyToManyField("self", symmetrical=False, related_name="following_users", blank=True)
+    following = models.ManyToManyField("self", symmetrical=False, related_name="following_users", related_query_name="followed_by", blank=True)
     
     #prevent a user following themselves.
     def follow(self, user_to_follow):
