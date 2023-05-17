@@ -228,5 +228,39 @@ def follow(request, username):
         "followers_count": followers_count,
     })
 
+@csrf_exempt
+@csrf_exempt
+def update_post(request, post_id):
+    if request.method == 'POST':
+        # Ensure the user is authenticated
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "User not authenticated."}, status=400)
+
+        # Get the post to be updated
+        try:
+            post = Post.objects.get(pk=post_id)
+        except Post.DoesNotExist:
+            return JsonResponse({"error": "Post not found."}, status=404)
+
+        # Ensure the user is the owner of the post
+        if post.post_owner != request.user:
+            return JsonResponse({"error": "User not authorized to edit this post."}, status=403)
+
+        # Load the JSON data from request.body
+        data = json.loads(request.body)
+
+        # Get the content from the data dictionary
+        content = data.get('content', '').strip()
+
+        if content:
+            # Update the post content
+            post.content = content
+            post.save()
+
+            return JsonResponse({"message": "Post updated successfully."}, status=201)
+        else:
+            return JsonResponse({"error": "Content is empty."}, status=400)
+    else:
+        return JsonResponse({"error": "Invalid request method."}, status=405)
 
 

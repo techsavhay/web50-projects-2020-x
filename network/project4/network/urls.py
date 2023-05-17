@@ -12,4 +12,5 @@ urlpatterns = [
     re_path(r'api/posts/(?P<view>[a-z]+)/(?P<page_number>\d+)/?((?P<username>[\w@.+-]+)/)?$', views.get_posts, name='get_posts'),
     path("api/likes/<int:post_id>/", views.save_like, name="save_like"),
     path("api/follow/<str:username>", views.follow, name="follow"),
+    path('api/update_post/<int:post_id>/', views.update_post, name='update_post'),
 ]
