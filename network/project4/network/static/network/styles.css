@@ -30,6 +30,11 @@
         padding-left: 300px;
 }
 
+#followingposts-view {
+    padding: 20px;
+    padding-left: 300px;
+}
+
 .like-button {
     background-color: white;
     color: white;

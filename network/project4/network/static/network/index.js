@@ -57,6 +57,13 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
     
+        // Add event listener for the "Following" link
+        document.querySelector('#followed-link').addEventListener('click', function() {
+            // Call loadPosts with 'followed' as the view
+            loadPosts('followed', 1);
+        });
+
+
 
     function addEventListeners(postElement, post, csrfToken) {
         // Add the event listener for the user-link click
@@ -120,12 +127,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Hide all views
                 document.querySelector("#allposts-view").style.display = 'none';
                 document.querySelector("#userposts-view").style.display = 'none';
+                document.querySelector("#followingposts-view").style.display = 'none'; // need to add this view to index.html
     
                 // Show the appropriate view
                 if (view === 'allposts') {
                     document.querySelector("#allposts-view").style.display = 'block';
                 } 
                 
+                else if (view === 'followed') {
+                    document.querySelector("#followingposts-view").style.display = 'block';
+                }
                 
                 else if (view === 'userposts') {
                     document.querySelector("#userposts-view").style.display = 'block';
@@ -142,7 +153,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     
                 }
     
-                const postsContainer = view === 'allposts' ? document.querySelector("#posts-container") : document.querySelector("#userposts-container");
+                const postsContainer = view === 'allposts' ? document.querySelector("#posts-container") : 
+                     (view === 'followed' ? document.querySelector("#followingposts-container") : 
+                     document.querySelector("#userposts-container"));
                 postsContainer.innerHTML = '';
     
                 data.posts.forEach(post => {

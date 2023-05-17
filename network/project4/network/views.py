@@ -221,13 +221,12 @@ def follow(request, username):
         followed = True
 
     # Calculate the new followers count
-    followers_count = user_instance.following_users.count()
+    followers_count = user_instance.following_users.count() # type: ignore
 
     return JsonResponse({
         "followed": followed,
         "followers_count": followers_count,
     })
-
 
 
 
