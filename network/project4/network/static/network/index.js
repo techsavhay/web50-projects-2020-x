@@ -194,8 +194,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         editButtonHTML = '<button class="edit-button">Edit</button>';
                     }
                     let likeButtonClass = post.liked_by_current_user ? 'liked-button' : '';
-                    let likeButtonHTML = `<button class="like-button ${likeButtonClass}">&#128077;</button> <span>${post.likes_count}</span>`;
-    
+                    let likeButtonHTML = `<button class="like-button ${likeButtonClass}">&#128077;</button> <span class="like-count">${post.likes_count}</span>`;
+                
                     postElement.innerHTML = `
                         <h5>${post.post_owner__first_name} ${post.post_owner__last_name} <a href="#" class="user-link" data-username="${post.post_owner__username}">@${post.post_owner__username}</a></h5>
                         <p>${post.content}</p>
@@ -208,6 +208,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     
                     postsContainer.append(postElement);
                 });
+                
     
                 // Handle pagination
                 document.querySelector('#previous-button').disabled = data.previous_page_number === null;
