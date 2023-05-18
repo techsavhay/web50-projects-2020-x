@@ -13,4 +13,5 @@ urlpatterns = [
     path("api/likes/<int:post_id>/", views.save_like, name="save_like"),
     path("api/follow/<str:username>", views.follow, name="follow"),
     path('api/update_post/<int:post_id>/', views.update_post, name='update_post'),
+    path('api/check_post_ownership/<int:post_id>/', views.check_post_ownership, name='check_post_ownership'),
 ]

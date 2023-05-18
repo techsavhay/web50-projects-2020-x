@@ -234,38 +234,33 @@ def follow(request, username):
     })
 
 @csrf_exempt
-@csrf_exempt
+@login_required
 def update_post(request, post_id):
     if request.method == 'POST':
-        # Ensure the user is authenticated
-        if not request.user.is_authenticated:
-            return JsonResponse({"error": "User not authenticated."}, status=400)
-
-        # Get the post to be updated
+        # Retrieve the post from the database
         try:
             post = Post.objects.get(pk=post_id)
         except Post.DoesNotExist:
-            return JsonResponse({"error": "Post not found."}, status=404)
-
-        # Ensure the user is the owner of the post
-        if post.post_owner != request.user:
-            return JsonResponse({"error": "User not authorized to edit this post."}, status=403)
-
-        # Load the JSON data from request.body
-        data = json.loads(request.body)
-
-        # Get the content from the data dictionary
-        content = data.get('content', '').strip()
-
-        if content:
+            return JsonResponse({'error': 'Post not found.'}, status=404)
+        
+        # Check if the logged-in user is the owner of the post
+        if request.user == post.post_owner:
             # Update the post content
-            post.content = content
+            new_content = json.loads(request.body).get('content')
+            post.content = new_content
             post.save()
-
-            return JsonResponse({"message": "Post updated successfully."}, status=201)
+            
+            return JsonResponse({'success': True, 'message': 'Post updated successfully.'})
         else:
-            return JsonResponse({"error": "Content is empty."}, status=400)
+            return JsonResponse({'error': 'You are not the owner of this post.'}, status=403)
     else:
-        return JsonResponse({"error": "Invalid request method."}, status=405)
+        return JsonResponse({'error': 'Invalid request method.'}, status=400)
 
-
+@login_required
+def check_post_ownership(request, post_id):
+    try:
+        post = Post.objects.get(pk=post_id)
+        is_owner = post.post_owner == request.user
+        return JsonResponse({"success": True, "is_owner": is_owner})
+    except Post.DoesNotExist:
+        return JsonResponse({"success": False, "error": "Post not found."})

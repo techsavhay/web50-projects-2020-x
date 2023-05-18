@@ -43,14 +43,14 @@ document.addEventListener('DOMContentLoaded', function () {
     })
       .then(response => response.json())
       .then(data => {
-              // Check if the response contains an error
-      if (data.error) {
-        // Display the error message to the user
-        console.error('Error:', data.error);
-        // You can show the error message on the page using an alert 
-        document.getElementById('error-message').textContent = data.error;
-        return; // Stop further execution of the code
-      }
+        // Check if the response contains an error
+        if (data.error) {
+          // Display the error message to the user
+          console.error('Error:', data.error);
+          // You can show the error message on the page using an alert 
+          document.getElementById('error-message').textContent = data.error;
+          return; // Stop further execution of the code
+        }
 
         // Update the 'Follow' or 'Unfollow' button based on the server's response
         if (data.followed) {
@@ -130,37 +130,65 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Add the event listener to the Edit button if it exists
+    // Add the event listener to the Edit button
     const editButton = postElement.querySelector('.edit-button');
     if (editButton) {
       editButton.addEventListener('click', () => {
-        if (editButton.textContent === 'Save') {
-          const textareaElement = postElement.querySelector('textarea');
-          const updatedContent = textareaElement.value;
+        // Check with the backend if the user owns the post
+        fetch(`/api/check_post_ownership/${post.id}/`)
+          .then(response => response.json())
+          .then(data => {
+            if (data.success && data.is_owner) {
+              // Owner of the post, allow editing
+              if (editButton.textContent === 'Edit') {
+                const contentElement = postElement.querySelector('.post-content');
+                const textareaElement = document.createElement('textarea');
+                textareaElement.value = contentElement.textContent.trim();
+                contentElement.replaceWith(textareaElement);
+                editButton.textContent = 'Save';
+              } else if (editButton.textContent === 'Save') {
+                const textareaElement = postElement.querySelector('textarea');
+                const updatedContent = textareaElement.value.trim();
 
-          fetch(`/api/update_post/${post.id}/`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-CSRFToken': csrfToken
-            },
-            body: JSON.stringify({
-              content: updatedContent
-            })
-          })
-            .then(response => response.json())
-            .then(data => {
-              if (data.success) {
-                textareaElement.replaceWith(document.createTextNode(updatedContent));
-                editButton.textContent = 'Edit';
-              } else {
-                console.error('Error:', data.message);
+                if (updatedContent) {
+                  // Token for security
+                  const csrfToken = document.getElementsByName("csrfmiddlewaretoken")[0].value;
+
+                  fetch(`/api/update_post/${post.id}/`, {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      'X-CSRFToken': csrfToken
+                    },
+                    body: JSON.stringify({
+                      content: updatedContent
+                    })
+                  })
+                    .then(response => response.json())
+                    .then(data => {
+                      console.log(data); // Log the response for debugging purposes
+                      if (data.success) {
+                        const newContentElement = document.createElement('p');
+                        newContentElement.classList.add('post-content');
+                        newContentElement.textContent = updatedContent;
+                        textareaElement.parentNode.replaceChild(newContentElement, textareaElement);
+                        editButton.textContent = 'Edit';
+                      } else {
+                        console.error('Error:', data.error);
+                      }
+                    })
+                    .catch(error => {
+                      console.error('Error fetching data:', error);
+                    });
+                }
               }
-            })
-            .catch(error => {
-              console.error('Error fetching data:', error);
-            });
-        }
+            } else {
+              console.error('Error:', data.error);
+            }
+          })
+          .catch(error => {
+            console.error('Error fetching data:', error);
+          });
       });
     }
   }
@@ -230,12 +258,13 @@ document.addEventListener('DOMContentLoaded', function () {
           if (post.post_owner__username === currentUsername) {
             editButtonHTML = '<button class="edit-button">Edit</button>';
           }
+
           let likeButtonClass = post.liked_by_current_user ? 'liked-button' : '';
           let likeButtonHTML = `<button class="like-button ${likeButtonClass}">&#128077;</button> <span class="like-count">${post.likes_count}</span>`;
 
           postElement.innerHTML = `
             <h5>${post.post_owner__first_name} ${post.post_owner__last_name} <a href="#" class="user-link" data-username="${post.post_owner__username}">@${post.post_owner__username}</a></h5>
-            <p>${post.content}</p>
+            <p class="post-content">${post.content}</p>
             <small>${new Date(post.timestamp).toLocaleString()}</small> 
             ${editButtonHTML}
             ${likeButtonHTML}
