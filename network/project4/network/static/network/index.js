@@ -93,6 +93,18 @@ let currentUsername = '';
     loadPosts('followed', 1);
   });
 
+  // add event lister for my posts link
+      // If myposts-link exists, add click event listener
+      const myPostsLink = document.querySelector('#myposts-link');
+      if(myPostsLink) {
+          myPostsLink.addEventListener('click', function(e) {
+              e.preventDefault();  // prevent the default action
+  
+              // Load the logged in user's posts
+              loadPosts('userposts', 1, myPostsLink.textContent.trim());
+          });
+      }
+
   function addEventListeners(postElement, post, csrfToken) {
     // Add the event listener for the user-link click
     const userLink = postElement.querySelector('.user-link');

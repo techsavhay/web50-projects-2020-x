@@ -19,7 +19,7 @@ class User(AbstractUser):
         self.following.add(user_to_follow)
 
     def is_followed_by(self, other_user):
-        return self.following_users.filter(id=other_user.id).exists()
+        return self.following_users.filter(id=other_user.id).exists() # type: ignore
 
 
 class Post(models.Model):
