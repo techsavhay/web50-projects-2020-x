@@ -47,6 +47,15 @@
     background-color: red;
   }
   
+  #pagination-buttons {
+    padding: 20px;
+    padding-left: 300px;
+}
 
+.edit-button {
+    /* Change the size of the button */
+    padding: 2px 3px;
+    font-size: 0.8em;
+}
   
  
