@@ -1,7 +1,10 @@
-// Declare Username of profile being viewed variable at a higher scope
-let currentUsername = '';
+
 
 document.addEventListener('DOMContentLoaded', function () {
+
+  // Declare Username of profile being viewed variable at a higher scope
+let currentUsername = '';
+
   // Add event listener for the newpost form submission
   document.querySelector('#newpost-form').addEventListener('submit', (event) => {
     event.preventDefault();
@@ -174,16 +177,17 @@ document.addEventListener('DOMContentLoaded', function () {
                         textareaElement.parentNode.replaceChild(newContentElement, textareaElement);
                         editButton.textContent = 'Edit';
                       } else {
-                        console.error('Error:', data.error);
+                        console.error('Error:');
                       }
                     })
                     .catch(error => {
-                      console.error('Error fetching data:', error);
+                      console.error('Error fetching data:');
                     });
                 }
               }
             } else {
-              console.error('Error:', data.error);
+              console.error('Error: you are not authorised to edit this post', data.error);
+              alert('Error: you are not authorised to edit this post' + data.error);
             }
           })
           .catch(error => {
@@ -254,10 +258,9 @@ document.addEventListener('DOMContentLoaded', function () {
           const postElement = document.createElement("div");
           postElement.classList.add("post");
 
-          let editButtonHTML = '';
-          if (post.post_owner__username === currentUsername) {
-            editButtonHTML = '<button class="edit-button">Edit</button>';
-          }
+          
+          editButtonHTML = '<button class="edit-button">Edit</button>';
+          
 
           let likeButtonClass = post.liked_by_current_user ? 'liked-button' : '';
           let likeButtonHTML = `<button class="like-button ${likeButtonClass}">&#128077;</button> <span class="like-count">${post.likes_count}</span>`;
