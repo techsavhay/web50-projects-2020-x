@@ -13,10 +13,10 @@ class User(AbstractUser):
         blank=True
     )
 
-    def follow(self, user_to_follow):
-        if self == user_to_follow:
-            raise ValidationError("A user cannot follow themselves.")
-        self.following.add(user_to_follow)
+    #def follow(self, user_to_follow):
+        #if self == user_to_follow:
+           # raise ValidationError("A user cannot follow themselves.")
+        #self.following.add(user_to_follow)
 
     def is_followed_by(self, other_user):
         return self.following_users.filter(id=other_user.id).exists() # type: ignore

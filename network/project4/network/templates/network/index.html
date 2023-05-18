@@ -1,9 +1,11 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
+<h5 class="error-message" id="edit-error-message"></h5>
 <form id="newpost-form">
     {% csrf_token %}
     <h5>New Post</h5>
+    
     <br>
     <textarea name="content" id="newpost-textarea"  placeholder="Enter new post here."></textarea>
     <br>

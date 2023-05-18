@@ -153,6 +153,16 @@ let currentUsername = '';
         fetch(`/api/check_post_ownership/${post.id}/`)
           .then(response => response.json())
           .then(data => {
+            console.log(data)
+            //check if the response contains and error
+           // if (data.error) {
+              //display error in console
+              //console.error('Error: you can only edit your own posts', data.error);
+              // display error on page to the user
+              //document.getElementById('edit-error-message').textContent = data.error;
+             // return; // Stop further execution of the code
+           // }
+
             if (data.success && data.is_owner) {
               // Owner of the post, allow editing
               if (editButton.textContent === 'Edit') {
@@ -181,7 +191,7 @@ let currentUsername = '';
                   })
                     .then(response => response.json())
                     .then(data => {
-                      console.log(data); // Log the response for debugging purposes
+                      //console.log(data); // Log the response for debugging purposes
                       if (data.success) {
                         const newContentElement = document.createElement('p');
                         newContentElement.classList.add('post-content');
@@ -197,9 +207,17 @@ let currentUsername = '';
                     });
                 }
               }
-            } else {
-              console.error('Error: you are not authorised to edit this post', data.error);
-              alert('Error: you are not authorised to edit this post' + data.error);
+            } //else {
+              //console.error('Error: you are not authorised to edit this post', data.error);
+              //alert('Error: you are not authorised to edit this post' + data.error);
+            //}
+
+            else {
+              //display error in console
+              console.error('Error: you can only edit your own posts', data.error);
+              // display error on page to the user
+              document.getElementById('edit-error-message').textContent = 'Error: you can only edit your own posts!'
+              return; // Stop further execution of the code
             }
           })
           .catch(error => {
@@ -271,7 +289,7 @@ let currentUsername = '';
           postElement.classList.add("post");
 
           
-          editButtonHTML = '<button class="edit-button">Edit</button>';
+          let editButtonHTML = '<button class="edit-button">Edit</button>';
           
 
           let likeButtonClass = post.liked_by_current_user ? 'liked-button' : '';
