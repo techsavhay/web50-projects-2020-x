@@ -13,7 +13,8 @@ from django.http import HttpResponseNotFound
 from django.contrib.auth.decorators import login_required
 
 def index(request):
-    return render(request, "network/index.html")
+    return render(request, "network/index.html", {"loggedinusername": request.user.username if request.user.is_authenticated else None})
+
 
 
 def login_view(request):
@@ -216,6 +217,10 @@ def follow(request, username):
         request.user.following.remove(user_instance)
         followed = False
     else:
+        # Check if the username being followed is the same as the currently logged-in user
+        if request.user.username == username:
+            return JsonResponse({"success": False, "error": "You cannot follow yourself!"})
+
         # Otherwise, follow the user
         request.user.following.add(user_instance)
         followed = True

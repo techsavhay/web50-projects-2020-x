@@ -43,6 +43,15 @@ document.addEventListener('DOMContentLoaded', function () {
     })
       .then(response => response.json())
       .then(data => {
+              // Check if the response contains an error
+      if (data.error) {
+        // Display the error message to the user
+        console.error('Error:', data.error);
+        // You can show the error message on the page using an alert 
+        document.getElementById('error-message').textContent = data.error;
+        return; // Stop further execution of the code
+      }
+
         // Update the 'Follow' or 'Unfollow' button based on the server's response
         if (data.followed) {
           document.querySelector("#follow-button").textContent = "Unfollow";
