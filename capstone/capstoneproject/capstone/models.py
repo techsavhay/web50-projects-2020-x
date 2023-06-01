@@ -21,5 +21,5 @@ class Pub(models.Model):
     photos = models.ImageField(upload_to='pub_photos')
 
     users_visited = models.ManyToManyField(User, related_name='visited_pubs')
-    posts = models.ForeignKey(Post, on_delete=models.CASCADE)
+    posts = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='pub')
     
