@@ -12,6 +12,7 @@ class Post(models.Model):
     
     owner = models.ForeignKey(User, on_delete= models.CASCADE)
 
+
 class Pub(models.Model):
     name = models.CharField(max_length=100, blank=False)
     address = models.CharField(max_length=200, blank=False)
