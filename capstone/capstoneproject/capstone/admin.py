@@ -1,7 +1,8 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
-from .models import User
+from django.contrib.auth import get_user_model
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-admin.site.register(User, UserAdmin)
-#admin.site.register(Post)
-#admin.site.register(Pub)
+User = get_user_model()
+
+admin.site.unregister(User)
+admin.site.register(User, BaseUserAdmin)
