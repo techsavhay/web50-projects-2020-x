@@ -49,3 +49,10 @@
   body {
     background-color: #C38154; /* Replace with your desired background color */
 }
+
+/* toolbar logo */
+.logo-image {
+    width: 250px; 
+    height: auto; 
+    padding: 0%;
+}
