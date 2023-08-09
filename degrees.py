@@ -91,9 +91,6 @@ def shortest_path(source, target):
 
     If no possible path, returns None."""
     """raise NotImplementedError"""
-    
-
-    ##todo
 
     #Keep track of the states explored
     num_explored = 0
@@ -115,29 +112,32 @@ def shortest_path(source, target):
         node = frontier.remove()
         num_explored += 1
     
-        # If node is the goal, then we have a solution
-        if node.state == target:
-            solution = []
-            while node.parent is not None:
-                solution.append((node.action, node.state))
-                node = node.parent
-            solution.reverse()
-            #DEBUG STATEMENT print(f"Solution = {solution}")
-            return solution
 
-        #if the node wasnt the solution do the following
-
-        #mark node as explored (redundant in this code i think)
+        # Add current node to explored set
         explored.add(node.state)
+
+        ###!!#if the node wasnt the solution do the following:
 
         #gets neighbors from neighbor function
         neighbors = neighbors_for_person(node.state)
 
-        #Loop over neighbors and create new nodes (ignoring explored neighbours) before adding to the frontier
+        # Loop over neighbors and create new nodes (ignoring explored neighbours) before adding to the frontier
         for movie, actor in neighbors:
             if not frontier.contains_state(actor) and actor not in explored:
                 child = Node(state=actor, parent=node, action=movie)
                 frontier.add(child)
+
+                # If this actor is the target, return the solution
+                if actor == target:
+                    return make_solution(child)
+
+def make_solution(node):
+        solution = []
+        while node.parent is not None:
+                solution.append((node.action, node.state))
+                node = node.parent
+        solution.reverse()
+        return solution
 
 
 def person_id_for_name(name):
