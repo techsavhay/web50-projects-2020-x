@@ -92,7 +92,7 @@ def shortest_path(source, target):
     If no possible path, returns None."""
     """raise NotImplementedError"""
 
-    # Initialize frontier to just the starting position
+    # Initialize frontier to just the starting position (first actor = source, parnet = previous actor in chain, action = movie)
     start = Node(state=source, parent=None, action=None)
     frontier = QueueFrontier()
     frontier.add(start) 
@@ -105,20 +105,19 @@ def shortest_path(source, target):
         if frontier.empty():
             return None
     
-        # Removes a node from the frontier and puts it as
+        # Removes a node from the frontier ready for examination
         node = frontier.remove()
     
-
-        # Add current node to explored set
+        # Add current node to 'explored' set (which was initilised above)
         explored.add(node.state)
-
 
         #gets neighbors from neighbor function
         neighbors = neighbors_for_person(node.state)
 
-        # Loop over neighbors and create new nodes (ignoring explored neighbours) before adding to the frontier
+        # Loop over neighbors and create new nodes (ignoring 'explored' neighbours) before adding to the frontier
         for movie, actor in neighbors:
             if not frontier.contains_state(actor) and actor not in explored:
+                """for each neighboring actor, a new Node is created. The state = neighboring actor, the parent = current actor, and the action = movie that connects them."""
                 child = Node(state=actor, parent=node, action=movie)
                 # If this actor is the target, return the solution 
                 if actor == target:
