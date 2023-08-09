@@ -100,7 +100,7 @@ def shortest_path(source, target):
 
     # Initialize frontier to just the starting position
     start = Node(state=source, parent=None, action=None)
-    frontier = StackFrontier()
+    frontier = QueueFrontier()
     frontier.add(start) 
 
     # Initialize an empty explored set
@@ -109,7 +109,7 @@ def shortest_path(source, target):
     # Loop that continues until a solution is found
     while True:
         if frontier.empty():
-            raise Exception("no solution")
+            return None
     
         # Removes a node from the frontier and puts it as
         node = frontier.remove()
@@ -117,15 +117,12 @@ def shortest_path(source, target):
     
         # If node is the goal, then we have a solution
         if node.state == target:
-            actions = []
-            steps = []
+            solution = []
             while node.parent is not None:
-                actions.append(node.action)
-                steps.append(node.state)
+                solution.append((node.action, node.state))
                 node = node.parent
-            actions.reverse()
-            steps.reverse()
-            solution = (actions, steps)
+            solution.reverse()
+            #DEBUG STATEMENT print(f"Solution = {solution}")
             return solution
 
         #if the node wasnt the solution do the following
@@ -133,8 +130,15 @@ def shortest_path(source, target):
         #mark node as explored (redundant in this code i think)
         explored.add(node.state)
 
-        #add neighbours to the frontier
-        
+        #gets neighbors from neighbor function
+        neighbors = neighbors_for_person(node.state)
+
+        #Loop over neighbors and create new nodes (ignoring explored neighbours) before adding to the frontier
+        for movie, actor in neighbors:
+            if not frontier.contains_state(actor) and actor not in explored:
+                child = Node(state=actor, parent=node, action=movie)
+                frontier.add(child)
+
 
 def person_id_for_name(name):
     """
